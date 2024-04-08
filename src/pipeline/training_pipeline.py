@@ -6,4 +6,4 @@ from data.load_data import *
 def train_pipeline(data_path, program_language):
     data = ingest_data(data_path, program_language)
 
-    data = clean_data(data)
+    train_ds, test_ds, valid_ds = clean_data(data)

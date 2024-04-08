@@ -17,10 +17,22 @@ class DataCleaning:
             raise e
         
 def clean_data(data):
-    pass
+    try:
+        preproc_strtg = DataPreprocessingStrategy()
+        data_cleanng_ = DataCleaning(data, preproc_strtg)
+        processed_data = data_cleanng_.handle_data()
+
+        split_strtg = DataDivideStrategy()
+        data_cleaning_ = DataCleaning(data, split_strtg)
+        train_ds, test_ds, valid_ds = data_cleaning_.handle_data()
+        logging.info("Data cleaning completed!")
+
+    except Exception as e:
+        logging.error("Error while handling data")
+        raise e
         
 if __name__ == '__main__':
-    data = IngestDataset("code_search_net")
+    data = IngestDataset("mbpp")
     strategy = DataPreprocessingStrategy()
     data_cleaning = DataCleaning(data, strategy)
     data_cleaning.handle_data()
