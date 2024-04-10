@@ -1,0 +1,15 @@
+checkpoint: "Salesforce/codet5-base"
+
+training_args:
+    output_dir: "codet5-fine-tuned-base"
+    overwrite_output_dir: True
+    num_train_epochs: 2
+    evaluation_strategy: "epoch"
+    logging_strategy: "steps"
+    logging_steps: 100
+    per_device_train_batch_size: 2
+    per_device_eval_batch_size: 2
+    gradient_accumulation_steps: 4
+    learning_rate: 5e-5
+    report_to: "wandb"
+    run_name: "codet5-base-fine-tuned"

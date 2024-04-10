@@ -3,7 +3,7 @@ import logging
 from data_strategy import *
 
 class MBPP_Dataset:
-    def __init__(self, datapath):
+    def __init__(self, datapath: str) -> None:
         self.data = ingest_data(datapath)
 
     def __len__(self):
