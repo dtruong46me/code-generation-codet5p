@@ -1,9 +1,10 @@
 import logging
 from data_strategy import *
 from load_data import *
+from datasets import Dataset
 
 class DataCleaning:
-    def __init__(self, data, strategy: DataStrategy):
+    def __init__(self, data: Dataset, strategy: DataStrategy):
         self.data = data
         self.strategy = strategy
 
@@ -15,7 +16,7 @@ class DataCleaning:
             logging.error(f"Error in handling data: {e}")
             raise e
         
-def clean_data(data, *args):
+def clean_data(data: Dataset, *args):
     try:
         tokenizing_strtg = DataTokenizingStrategy()
         data_cleanng_ = DataCleaning(data, tokenizing_strtg)
@@ -32,7 +33,12 @@ def clean_data(data, *args):
         raise e
         
 if __name__ == '__main__':
-    data = IngestDataset("mbpp")
-    strategy = DataTokenizingStrategy()
-    data_cleaning = DataCleaning(data, strategy)
-    data_cleaning.handle_data()
+    data_path = "mbpp"
+    dataset = ingest_data(data_path)
+
+    checkpoint = "Salesforce/codet5-base"
+    tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+
+    cleaned_data = clean_data(dataset, tokenizer)
+    print(print(cleaned_data))
+    print(cleaned_data.shape)

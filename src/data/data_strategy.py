@@ -26,7 +26,7 @@ class DataDivideStrategy(DataStrategy):
 class DataTokenizingStrategy(DataStrategy):
     def handle_data(self, data: Dataset, tokenizer) -> Dataset:
         try:
-            tokenizer.pad_token = tokenizer.eos
+            tokenizer.pad_token = tokenizer.eos_token
             tokenized_inputs = tokenizer(data["text"], padding="max_length", truncation=True, return_tensors="pt")
             tokenized_targets = tokenizer(data["code"], padding="max_length", truncation=True, return_tensors="pt")
 
