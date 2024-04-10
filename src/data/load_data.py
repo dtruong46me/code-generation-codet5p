@@ -1,17 +1,23 @@
 import logging
 from datasets import load_dataset
-from data_strategy import *
+from datasets import DatasetDict, Dataset, concatenate_datasets
 
 class IngestDataset:
-    def __init__(self, from_huggingface="mbpp"):
+    def __init__(self, from_huggingface:str = "mbpp") -> None:
         self.from_huggingface = from_huggingface
 
-    def get_data(self):
+    def get_data(self) -> Dataset:
         logging.info(f"Loading data from {self.from_huggingface}")
         data = load_dataset(self.from_huggingface, trust_remote_code=True)
+        data = concatenate_datasets([
+            data["train"],
+            data["test"],
+            data["validation"],
+            data["prompt"]
+        ])
         return data
     
-def ingest_data(from_huggingface: str):
+def ingest_data(from_huggingface: str) -> Dataset:
     try:
         ingest_data = IngestDataset(from_huggingface)
         dataset = ingest_data.get_data()
