@@ -1,7 +1,15 @@
 import logging
+from datasets import Dataset
+
+import sys
+import os
+path = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, path)
 from data_strategy import *
 from load_data import *
-from datasets import Dataset
+
+checkpoint = "Salesforce/codet5-base"
+tokenizer = AutoTokenizer.from_pretrained(checkpoint)
 
 class DataCleaning:
     def __init__(self, data: Dataset, strategy: DataStrategy):
@@ -20,7 +28,7 @@ def clean_data(data: Dataset, *args):
     try:
         tokenizing_strtg = DataTokenizingStrategy()
         data_cleanng_ = DataCleaning(data, tokenizing_strtg)
-        tokenized_data = data_cleanng_.handle_data(*args)
+        tokenized_data = data_cleanng_.handle_data(tokenizer)
 
         split_strtg = DataDivideStrategy()
         data_cleaning_ = DataCleaning(tokenized_data, split_strtg)
@@ -31,14 +39,10 @@ def clean_data(data: Dataset, *args):
     except Exception as e:
         logging.error("Error while handling data")
         raise e
-        
-if __name__ == '__main__':
-    data_path = "mbpp"
-    dataset = ingest_data(data_path)
-
+    
+if __name__=='__main__':
     checkpoint = "Salesforce/codet5-base"
-    tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+    datapath = "mbpp"
 
-    cleaned_data = clean_data(dataset, tokenizer)
-    print(print(cleaned_data))
-    print(cleaned_data.shape)
+    data = load_dataset(datapath)
+    data = clean_data(data)

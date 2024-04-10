@@ -30,7 +30,6 @@ class DataTokenizingStrategy(DataStrategy):
             tokenized_inputs = tokenizer(data["text"], padding="max_length", truncation=True, return_tensors="pt")
             tokenized_targets = tokenizer(data["code"], padding="max_length", truncation=True, return_tensors="pt")
 
-            print(tokenized_inputs)
             data = Dataset.from_dict({
                 "input_ids": tokenized_inputs.input_ids,
                 "attention_mask": tokenized_inputs.attention_mask,
@@ -54,3 +53,8 @@ if __name__=='__main__':
     dataset = tokenizer_strategy.handle_data(dataset, tokenizer)
     print(dataset)
     print(dataset[0])
+
+    print()
+    print(tokenizer.decode(dataset[0]["input_ids"]))
+    print(tokenizer.decode(dataset[0]["attention_mask"]))
+    print(tokenizer.decode(dataset[0]["labels"]))
