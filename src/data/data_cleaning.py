@@ -27,13 +27,18 @@ class DataCleaning:
 def clean_data(data: Dataset, *args):
     try:
         tokenizing_strtg = DataTokenizingStrategy()
+        print(0)
         data_cleanng_ = DataCleaning(data, tokenizing_strtg)
+        print(1)
         tokenized_data = data_cleanng_.handle_data(tokenizer)
+        print(2)
 
         split_strtg = DataDivideStrategy()
+        print(3)
         data_cleaning_ = DataCleaning(tokenized_data, split_strtg)
+        print(4)
         tokenized_data = data_cleaning_.handle_data(*args)
-        logging.info("Data cleaning completed!")
+        print(5)
         return tokenized_data
 
     except Exception as e:
@@ -44,5 +49,6 @@ if __name__=='__main__':
     checkpoint = "Salesforce/codet5-base"
     datapath = "mbpp"
 
-    data = load_dataset(datapath)
+    data = ingest_data(datapath)
     data = clean_data(data)
+    print(data)

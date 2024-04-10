@@ -24,7 +24,7 @@ def load_trainer(model, training_args, dataset, tokenizer):
         model=model,
         args=training_args,
         train_dataset=dataset["train"],
-        eval_dataset=dataset["validation"],
+        # eval_dataset=dataset["validation"],
         tokenizer=tokenizer
     )
     return trainer

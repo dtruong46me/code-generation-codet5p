@@ -4,6 +4,7 @@ training_args:
     output_dir: "codet5-fine-tuned-base"
     overwrite_output_dir: True
     num_train_epochs: 2
+    weights_decay: 0.01
     evaluation_strategy: "epoch"
     logging_strategy: "steps"
     logging_steps: 100
@@ -11,5 +12,6 @@ training_args:
     per_device_eval_batch_size: 2
     gradient_accumulation_steps: 4
     learning_rate: 5e-5
+    push_to_hub: True
     report_to: "wandb"
     run_name: "codet5-base-fine-tuned"

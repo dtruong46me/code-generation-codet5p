@@ -26,16 +26,19 @@ class DataDivideStrategy(DataStrategy):
 class DataTokenizingStrategy(DataStrategy):
     def handle_data(self, data: Dataset, tokenizer) -> Dataset:
         try:
+            print(data.column_names)
             tokenizer.pad_token = tokenizer.eos_token
+            print("oke")
             tokenized_inputs = tokenizer(data["text"], padding="max_length", truncation=True, return_tensors="pt")
+            print("okee")
             tokenized_targets = tokenizer(data["code"], padding="max_length", truncation=True, return_tensors="pt")
-
+            print("okeee")
             data = Dataset.from_dict({
                 "input_ids": tokenized_inputs.input_ids,
                 "attention_mask": tokenized_inputs.attention_mask,
                 "labels": tokenized_targets.input_ids
             })
-
+            
             return data
 
         except Exception as e:
