@@ -45,10 +45,10 @@ def clean_data(data: Dataset, *args):
         logging.error("Error while handling data")
         raise e
     
-if __name__=='__main__':
-    checkpoint = "Salesforce/codet5-base"
-    datapath = "mbpp"
+# if __name__=='__main__':
+#     checkpoint = "Salesforce/codet5-base"
+#     datapath = "mbpp"
 
-    data = ingest_data(datapath)
-    data = clean_data(data)
-    print(data)
+#     data = ingest_data(datapath)
+#     data = clean_data(data)
+#     print(data)

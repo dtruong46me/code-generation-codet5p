@@ -45,19 +45,19 @@ class DataTokenizingStrategy(DataStrategy):
             logging.error("Error while preprocessing data")
             raise e
         
-if __name__=='__main__':
-    data_path = "mbpp"
-    dataset = ingest_data(data_path)
-    print(dataset)
+# if __name__=='__main__':
+#     data_path = "mbpp"
+#     dataset = ingest_data(data_path)
+#     print(dataset)
 
-    checkpoint = "Salesforce/codet5-base"
-    tokenizer = AutoTokenizer.from_pretrained(checkpoint)
-    tokenizer_strategy = DataTokenizingStrategy()
-    dataset = tokenizer_strategy.handle_data(dataset, tokenizer)
-    print(dataset)
-    print(dataset[0])
+#     checkpoint = "Salesforce/codet5-base"
+#     tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+#     tokenizer_strategy = DataTokenizingStrategy()
+#     dataset = tokenizer_strategy.handle_data(dataset, tokenizer)
+#     print(dataset)
+#     print(dataset[0])
 
-    print()
-    print(tokenizer.decode(dataset[0]["input_ids"]))
-    print(tokenizer.decode(dataset[0]["attention_mask"]))
-    print(tokenizer.decode(dataset[0]["labels"]))
+#     print()
+#     print(tokenizer.decode(dataset[0]["input_ids"]))
+#     print(tokenizer.decode(dataset[0]["attention_mask"]))
+#     print(tokenizer.decode(dataset[0]["labels"]))
