@@ -25,13 +25,15 @@ def training_pipeline(checkpoint, datapath, configpath):
         print("Complete cleaning dataset!")
 
         config = load_config(configpath)
-        logging.info("Complete loading config!")
+        print("Complete loading config!")
 
         training_args = load_training_arguments(config)
-        logging.info("Complete loading training arguments!")
+        print("Complete loading training arguments!")
+        print(training_args)
 
         trainer = load_trainer(model=model.codet5, training_args=training_args, dataset=data, tokenizer=model.tokenizer)
-        logging.info("Complete loading trainer!")
+        print("Complete loading trainer!")
+        print(trainer)
 
         trainer.train()
 
