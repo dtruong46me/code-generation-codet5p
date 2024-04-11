@@ -4,7 +4,7 @@ from datasets import Dataset
 import sys
 import os
 
-logger = logger.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 path = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, path)
