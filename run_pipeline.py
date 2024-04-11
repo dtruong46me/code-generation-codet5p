@@ -33,6 +33,6 @@ if __name__=='__main__':
             os.environ["WANDB_API_KEY"] = wandb_token
     
     notebook_login(huggingface_hub_token)
-    wandb.login(wandb_token)
+    wandb.login(key=wandb_token)
 
     training_pipeline(checkpoint, datapath, configpath)
