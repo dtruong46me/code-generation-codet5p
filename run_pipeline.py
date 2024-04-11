@@ -1,5 +1,5 @@
 import wandb
-from huggingface_hub import notebook_login
+from huggingface_hub import login
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -38,7 +38,7 @@ if __name__=='__main__':
         if wandb_token:
             os.environ["WANDB_API_KEY"] = wandb_token
     
-    notebook_login(huggingface_hub_token)
+    login(token=huggingface_hub_token)
     wandb.login(key=wandb_token)
 
     training_pipeline(args)
