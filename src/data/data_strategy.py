@@ -18,9 +18,22 @@ class DataStrategy(ABC):
 class DataDivideStrategy(DataStrategy):
     def handle_data(self, data: Dataset, *args) -> DatasetDict:
         try:
-            data = data.train_test_split(test_size=0.2)
+            # Divide data into Train-Test
+            divided_data = data.train_test_split(test_size=0.3)
+            train_data = divided_data["train"]
+            test_data = divided_data["test"]
+
+            # Divide data into Test-Valid
+            test_valid_data = test_data.train_test_split(test_size=0.5)
+            test_data = test_valid_data["train"]
+            valid_data = test_valid_data["test"]
+            
             logger.info("Complete spliting dataset!")
-            return data
+            return DatasetDict({
+                "train": train_data,
+                "test": test_data,
+                "valid": valid_data
+            })
 
         except Exception as e:
             logger.error(f"Error in dividing data: {e}")
