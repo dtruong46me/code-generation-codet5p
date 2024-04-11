@@ -3,6 +3,9 @@ from datasets import Dataset
 
 import sys
 import os
+
+logger = logger.getLogger(__name__)
+
 path = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(0, path)
 from data_strategy import *
@@ -21,28 +24,22 @@ class DataCleaning:
             return self.strategy.handle_data(self.data, *args)
         
         except Exception as e:
-            logging.error(f"Error in handling data: {e}")
+            logger.error(f"Error in handling data: {e}")
             raise e
         
 def clean_data(data: Dataset, *args):
     try:
         tokenizing_strtg = DataTokenizingStrategy()
-        print(0)
         data_cleanng_ = DataCleaning(data, tokenizing_strtg)
-        print(1)
         tokenized_data = data_cleanng_.handle_data(tokenizer)
-        print(2)
 
         split_strtg = DataDivideStrategy()
-        print(3)
         data_cleaning_ = DataCleaning(tokenized_data, split_strtg)
-        print(4)
         tokenized_data = data_cleaning_.handle_data(*args)
-        print(5)
         return tokenized_data
 
     except Exception as e:
-        logging.error("Error while handling data")
+        logger.error("Error while handling data")
         raise e
     
 # if __name__=='__main__':

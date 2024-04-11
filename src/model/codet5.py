@@ -2,6 +2,7 @@ import logging
 from transformers import AutoTokenizer, T5ForConditionalGeneration
 import torch
 
+logger = logging.getLogger(__name__)
 
 class FineTunedCodet5Model:
     def __init__(self, checkpoint):
@@ -12,13 +13,14 @@ class FineTunedCodet5Model:
     
     def generate(self, input_text):
         try:
+            logger.info("Generating output for input: {input_text}")
             input_ids = self.tokenizer.encode(input_text, return_tensors="pt").to(self.device)
             outputs = self.codet5.generate(input_ids, max_length=1024)
             generated_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
             return generated_text
 
         except Exception as e:
-            logging.error(f"Error while generating: {e}")
+            logger.error(f"Error while generating: {e}")
             raise e
         
 def load_model(checkpoint):
@@ -26,7 +28,7 @@ def load_model(checkpoint):
         return FineTunedCodet5Model(checkpoint)
     
     except Exception as e:
-        logging.error("Error while loading model: {e}")
+        logger.error("Error while loading model: {e}")
         raise e
 
 # if __name__=='__main__':
