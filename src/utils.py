@@ -1,4 +1,5 @@
 import yaml
+import os
 from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer
 
 def load_training_arguments(config):
@@ -34,3 +35,12 @@ def load_config(config_path):
     with open(config_path, "r") as f:
         config = yaml.safe_load(f)
     return config
+
+def load_tokens(token_path):
+    if os.path.exists(token_path):
+        with open(token_path, "r") as f:
+            tokens = yaml.safe_load(f)
+            return tokens
+        
+    else:
+        return

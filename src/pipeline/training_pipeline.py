@@ -37,16 +37,16 @@ def training_pipeline(checkpoint, datapath, configpath):
 
         trainer.train()
 
-        # trainer.push_to_hub()
+        trainer.push_to_hub()
 
     except Exception as e:
         logging.error("Error while training: {e}")
         raise
 
-if __name__=='__main__':
-    checkpoint = "Salesforce/codet5-base"
-    datapath = "mbpp"
-    configpath = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "config.yaml"))
-    print(configpath)
+# if __name__=='__main__':
+#     checkpoint = "Salesforce/codet5-base"
+#     datapath = "mbpp"
+#     configpath = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "config.yaml"))
+#     print(configpath)
 
-    training_pipeline(checkpoint, datapath, configpath)
+#     training_pipeline(checkpoint, datapath, configpath)

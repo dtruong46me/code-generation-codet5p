@@ -29,16 +29,16 @@ def load_model(checkpoint):
         logging.error("Error while loading model: {e}")
         raise e
 
-if __name__=='__main__':
-    checkpoint = "Salesforce/codet5p-220m-py"
-    model = load_model(checkpoint)
+# if __name__=='__main__':
+#     checkpoint = "Salesforce/codet5p-220m-py"
+#     model = load_model(checkpoint)
 
-    # prompt = "def print_hello_world():"
-    # prompt = "Write a function to get a lucid number smaller than or equal to n."
-    prompt = "Only Write a function to reverse words in a given string."
+#     # prompt = "def print_hello_world():"
+#     # prompt = "Write a function to get a lucid number smaller than or equal to n."
+#     prompt = "Only Write a function to reverse words in a given string."
 
-    output = model.generate(prompt)
-    print()
-    print(output)
-    print()
-    print(type(model))
+#     output = model.generate(prompt)
+#     print()
+#     print(output)
+#     print()
+#     print(type(model))

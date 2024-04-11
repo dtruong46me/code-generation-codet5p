@@ -28,7 +28,7 @@ def ingest_data(from_huggingface: str) -> Dataset:
         logging.error(f"Error while ingesting data: {e}")
         raise e
     
-if __name__=="__main__":
-    data_path = "mbpp"
-    dataset = ingest_data(data_path)
-    print(dataset)
+# if __name__=="__main__":
+#     data_path = "mbpp"
+#     dataset = ingest_data(data_path)
+#     print(dataset)
