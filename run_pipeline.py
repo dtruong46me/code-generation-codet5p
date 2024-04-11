@@ -11,13 +11,19 @@ path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 sys.path.insert(0, path)
 
 from src.pipeline.training_pipeline import training_pipeline
-from src.utils import load_tokens
+from src.utils import load_tokens, parse_args
 
 
 if __name__=='__main__':
-    checkpoint = "Salesforce/codet5-base"
-    datapath = "mbpp"
-    configpath = os.path.abspath(os.path.join(os.path.dirname(__file__), "config.yaml"))
+    # checkpoint = "Salesforce/codet5-base"
+    # datapath = "mbpp"
+    # configpath = os.path.abspath(os.path.join(os.path.dirname(__file__), "config.yaml"))
+    args = parse_args()
+    print(args)
+    checkpoint = args.checkpoint
+    datapath = args.datapath
+    configpath = args.configpath
+
     token_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "credential.yaml"))
 
     tokens = load_tokens(token_path)
@@ -35,4 +41,4 @@ if __name__=='__main__':
     notebook_login(huggingface_hub_token)
     wandb.login(key=wandb_token)
 
-    training_pipeline(checkpoint, datapath, configpath)
+    training_pipeline(args)

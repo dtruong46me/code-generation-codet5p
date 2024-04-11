@@ -2,6 +2,7 @@ import logging
 
 import os
 import sys
+import argparse
 
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, path)
@@ -11,36 +12,45 @@ from model.codet5 import load_model
 from data.data_cleaning import clean_data
 from data.load_data import ingest_data
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
-def training_pipeline(checkpoint, datapath, configpath):
+
+def training_pipeline(args: argparse.Namespace):
     try:
-        model = load_model(checkpoint)
-        print("Complete loading model!")
+        # Load model from checkpoint
+        model = load_model(args.checkpoint)
+        logger.info("Complete loading model!")
 
-        data = ingest_data(datapath)
-        print("Complete loading dataset!")
+        # Load dataset from datapath
+        data = ingest_data(args.datapath)
+        logger.info("Complete loading dataset!")
 
+        # Clean dataset with strategy
         data = clean_data(data, model.tokenizer)
-        print(data.column_names)
-        print("Complete cleaning dataset!")
+        logger.info("Complete cleaning dataset!")
 
-        config = load_config(configpath)
-        print("Complete loading config!")
+        # Load training arguments
+        training_args = load_training_arguments(args)
+        logger.info("Complete loading training arguments!")
 
-        training_args = load_training_arguments(config)
-        print("Complete loading training arguments!")
-        print(training_args)
+        # Load trainer
+        trainer = load_trainer(model=model.codet5, 
+                               training_args=training_args, 
+                               dataset=data, 
+                               tokenizer=model.tokenizer)
+        logger.info("Complete loading trainer!")
 
-        trainer = load_trainer(model=model.codet5, training_args=training_args, dataset=data, tokenizer=model.tokenizer)
-        print("Complete loading trainer!")
-        print(trainer)
-
+        # Train model
         trainer.train()
+        logger.info("Complete training!")
 
+        # Push trainer to Huggingface Hub
         trainer.push_to_hub()
+        logger.info("Complete pushing model to hub!")
 
     except Exception as e:
-        logging.error("Error while training: {e}")
+        logger.error("Error while training: {e}")
         raise
 
 # if __name__=='__main__':
