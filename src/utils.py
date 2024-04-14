@@ -66,6 +66,8 @@ def load_tokens(token_path):
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Fine tuning CodeT5 Model")
     parser.add_argument("--configpath", type=str, default=None, help="Path to the config.yaml")
+    parser.add_argument("--huggingface_hub_token", type=str, default="none")
+    parser.add_argument("--wandb_token", type=str, default="none")
     parser.add_argument("--checkpoint", type=str, default="Salesforce/codet5-base", help="Model checkpoint to use")
     parser.add_argument("--output_dir", type=str, default="codet5-fine-tuned", help="Output directory for fine-tuned model")
     parser.add_argument("--overwrite_output_dir", type=bool, default=True)
