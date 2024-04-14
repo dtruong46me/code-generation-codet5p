@@ -23,6 +23,11 @@ class FineTunedCodet5Model:
             logger.error(f"Error while generating: {e}")
             raise e
         
+    def save_model(self, output_dir):
+        self.codet5.save_pretrained(output_dir)
+        self.tokenizer.save_pretrained(output_dir)
+        logger.info("Complete saving model!")
+        
 def load_model(checkpoint):
     try:
         return FineTunedCodet5Model(checkpoint)
