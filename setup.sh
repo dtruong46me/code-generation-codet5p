@@ -5,5 +5,4 @@ pip install accelerate
 pip install -U datasets
 pip install wandb
 pip install huggingface_hub
-pip install evaluate
 echo "Set up complete!"
