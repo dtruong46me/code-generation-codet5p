@@ -61,11 +61,14 @@ class DataTokenizingStrategy(DataStrategy):
                 truncation=True,
                 return_tensors="pt"
             )
-            
+
+            labels = tokenized_targets.input_ids
+            labels[labels == 0] = -100
+
             data = Dataset.from_dict({
-                "input_ids": tokenized_inputs.input_ids,
-                "attention_mask": tokenized_inputs.attention_mask,
-                "labels": tokenized_targets.input_ids
+                          "input_ids": tokenized_inputs.input_ids,
+                          "attention_mask": tokenized_inputs.attention_mask,
+                          "labels": labels
             })
 
             logger.info("Complete tokenizing dataset")
