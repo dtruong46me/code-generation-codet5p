@@ -16,12 +16,13 @@ class FineTunedCodet5Model:
             logger.info("Generating output for input: {input_text}")
             input_ids = self.tokenizer.encode(input_text, return_tensors="pt").to(self.device)
             outputs = self.codet5.generate(input_ids, max_length=1024)
-            generated_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+            generated_text = self.tokenizer.decode([token for token in outputs[0] if token != -100], skip_special_tokens=True)
             return generated_text
 
         except Exception as e:
             logger.error(f"Error while generating: {e}")
             raise e
+        
         
 def load_model(checkpoint):
     try:

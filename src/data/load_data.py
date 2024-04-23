@@ -1,6 +1,5 @@
 import logging
-from datasets import load_dataset
-from datasets import Dataset, concatenate_datasets
+from datasets import load_dataset, Dataset, concatenate_datasets
 
 logger = logging.getLogger(__name__)
 
