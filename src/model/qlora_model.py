@@ -1,6 +1,7 @@
 import logging
 import torch
 from codet5 import FineTunedCodet5Model
+import argparse
 
 from transformers import BitsAndBytesConfig, GenerationConfig, T5ForConditionalGeneration
 from peft import LoraConfig, PeftConfig, PeftModel, TaskType, get_peft_model, prepare_model_for_kbit_training
@@ -48,9 +49,13 @@ def load_qlora_model(checkpoint):
         raise e
     
 if __name__=='__main__':
-    checkpoint = "Salesforce/codet5p-770m"
-    model = QLoraCodet5p(checkpoint)
+    args = argparse.ArgumentParser()
+    args.add_argument("--checkpoint", default="Salesforce/codet5p-770m")
+    args = args.parse_args()
+    # checkpoint = "Salesforce/codet5p-770m"
+    model = QLoraCodet5p(args.checkpoint)
     model.qlora_model = model.get_qlora_model()
 
+    model.qlora_model = model.get_peft(model=model.qlora_model, config=model.lora_config)
     trainable_params = model.get_trainable_parameters()
     print("Trainable Parameters: ", trainable_params)

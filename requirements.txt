@@ -1,3 +1,5 @@
 wandb
 huggingface_hub
 accelerate
+peft
+bitsandbytes
