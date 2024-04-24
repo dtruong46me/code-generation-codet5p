@@ -21,7 +21,7 @@ for ((i = 0; i < $gpu_num; i++)); do
   echo 'Running process #' ${i} 'from' $start_index 'to' $end_index 'on GPU' ${gpu}
   ((index++))
   (
-    CUDA_VISIBLE_DEVICES=$gpu python generate_codet5p_py.py --model Salesforce/${model} \
+    CUDA_VISIBLE_DEVICES=$gpu python /kaggle/working/generate_codet5p_py.py --model Salesforce/${model} \
       --start_index ${start_index} --end_index ${end_index} --temperature ${temp} \
       --num_seqs_per_iter ${num_seqs_per_iter} --N ${pred_num} --max_len ${max_len} --output_path ${output_path}
   ) &
