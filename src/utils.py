@@ -19,21 +19,21 @@ def load_training_arguments(args):
             overwrite_output_dir=args.overwrite_output_dir,
             num_train_epochs=args.num_train_epochs,
             weight_decay=args.weight_decay,
-            evaluation_strategy=args.evaluation_strategy,
-            logging_strategy=args.logging_strategy,
-            logging_steps=args.logging_steps,
-            save_strategy=args.save_strategy,
-            save_steps=args.save_steps,
-            metric_for_best_model=args.metric_for_best_model,
-            save_total_limit=args.save_total_limit,
-            save_safetensors=args.save_safetensors,
+            # evaluation_strategy=args.evaluation_strategy,
+            # logging_strategy=args.logging_strategy,
+            # logging_steps=args.logging_steps,
+            # save_strategy=args.save_strategy,
+            # save_steps=args.save_steps,
+            # metric_for_best_model=args.metric_for_best_model,
+            # save_total_limit=args.save_total_limit,
+            # save_safetensors=args.save_safetensors,
             per_device_train_batch_size=args.per_device_train_batch_size,
             per_device_eval_batch_size=args.per_device_eval_batch_size,
             gradient_accumulation_steps=args.gradient_accumulation_steps,
             learning_rate=args.learning_rate,
             push_to_hub=args.push_to_hub,
-            report_to=args.report_to,
-            run_name=args.run_name
+            # report_to=args.report_to,
+            # run_name=args.run_name
         )
     return training_args
 
