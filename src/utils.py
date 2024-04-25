@@ -1,7 +1,12 @@
 import yaml
 import os
-from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer
+from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, TrainerCallback, TrainingArguments, TrainerState, TrainerControl
 import argparse
+import logging
+import wandb
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def load_training_arguments(args):
     if args.configpath is not None:
@@ -33,13 +38,54 @@ def load_training_arguments(args):
     return training_args
 
 
+class WandBCallback(TrainerCallback):
+    def __init__(self, tokenizer):
+        super().__init__()
+        self.tokenizer = tokenizer
+        self.step = 0
+
+    def on_evaluate(self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs):
+        epoch = state.epoch
+        print(epoch)
+        logger.info("Current epoch: ", epoch)
+
+        step = state.global_step
+        print(step)
+        logger.info("Current step: ", step)
+
+        print(state.log_history)
+        print(type(state.log_history))
+        print(state.best_metric)
+        print(state.best_model_checkpoint)
+        print(state.eval_steps)
+        print(state.logging_steps)
+        logger.info(state.log_history)
+
+        training_loss = state.log_history[0]["loss"]
+        logger.info("Current training loss: ", training_loss)
+
+        validation_loss = state.log_history[1]["eval_loss"]
+        logger.info("Current valid loss: ", validation_loss)
+        
+        wandb.log({
+            "Training Loss": training_loss,
+            "Validation Loss": validation_loss,
+            "Epoch": epoch,
+            "Step": step
+        })
+
+
 def load_trainer(model, training_args, dataset, tokenizer):
+
+    callbacks = [WandBCallback(tokenizer)]
+
     trainer = Seq2SeqTrainer(
         model=model,
         args=training_args,
         train_dataset=dataset["train"],
         eval_dataset=dataset["valid"],
-        tokenizer=tokenizer
+        tokenizer=tokenizer,
+        callbacks=callbacks
     )
     return trainer
 
@@ -68,6 +114,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--num_train_epochs", type=int, default=3)
     parser.add_argument("--weight_decay", type=float, default=0.0)
     parser.add_argument("--evaluation_strategy", type=str, default="no")
+    parser.add_argument("--eval_steps", type=int, default=500)
     parser.add_argument("--logging_strategy", type=str, default="steps")
     parser.add_argument("--logging_steps", type=int, default=500)
     parser.add_argument("--save_strategy", type=str, default="steps")
