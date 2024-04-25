@@ -52,7 +52,7 @@ def training_pipeline(args: argparse.Namespace):
                                    tokenizer=model.tokenizer)
         if args.uselora==True:
             trainer = None
-        if args.userqlora==False and args.uselora==False:
+        if args.useqlora==False and args.uselora==False:
             trainer = load_trainer(model=model.origin_model, 
                                 training_args=training_args, 
                                 dataset=data, 
