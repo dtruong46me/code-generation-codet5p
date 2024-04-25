@@ -37,7 +37,7 @@ class QLoraCodet5p(FineTunedCodet5Model):
         self.generation_config = GenerationConfig(max_new_tokens=200, temperature=0.7, top_p=0.7)
 
     def get_qlora_model(self, **kwargs):
-        return T5ForConditionalGeneration.from_pretrained(self.checkpoint, quantization_config=self.bnb_config, **kwargs).to(self.device)
+        return T5ForConditionalGeneration.from_pretrained(self.checkpoint, quantization_config=self.bnb_config, **kwargs)
     
     def get_peft(self, model, config):
         return get_peft_model(model, config)

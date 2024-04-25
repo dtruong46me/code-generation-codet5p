@@ -23,6 +23,8 @@ def training_pipeline(args: argparse.Namespace):
         if args.useqlora==True:
             model = load_qlora_model(args.checkpoint, args)
             model.qlora_model = model.get_qlora_model()
+            print(model.device)
+            model.qlora_model.to(model.device)
             model.qlora_model = model.get_peft(model.qlora_model, model.lora_config)
             model.get_trainable_parameters()
         if args.uselora==True:
