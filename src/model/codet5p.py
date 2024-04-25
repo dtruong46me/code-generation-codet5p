@@ -13,7 +13,7 @@ class FineTunedCodet5Model:
         self.origin_model = None
     
     def get_codet5p(self):
-        return T5ForConditionalGeneration.from_pretrained(self.checkpoint)
+        return T5ForConditionalGeneration.from_pretrained(self.checkpoint).to(self.device)
 
     def generate(self, input_text, **kwargs):
         try:
