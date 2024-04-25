@@ -20,6 +20,7 @@ def training_pipeline(args: argparse.Namespace):
     try:
         # Load model from checkpoint
         model = load_model(args.checkpoint)
+        model.origin_model = model.get_codet5p()
         logger.info("Complete loading model!")
 
         # Load dataset from datapath

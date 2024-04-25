@@ -5,6 +5,12 @@ pip install -q -U datasets
 pip install -q -r requirements.txt
 pip install -q -r /content/code-generation-codet5p/requirements.txt
 pip install -q -r /kaggle/working/code-generation-codet5p/requirements.txt
-echo "Installed packages:\ndatasets\nwandb\nhuggingface_hub\naccelerate\npeft\nbitsandbytes\n"
+echo "Installed packages:"
+echo "datasets"
+echo "wandb"
+echo "huggingface_hub"
+echo "accelerate"
+echo "peft"
+echo "bitsandbytes"
 echo "=========================="
 echo "Set up complete!"

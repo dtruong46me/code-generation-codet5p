@@ -10,7 +10,7 @@ class FineTunedCodet5Model:
         self.checkpoint = checkpoint
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.tokenizer = AutoTokenizer.from_pretrained(checkpoint)
-        self.codet5p = None
+        self.origin_model = None
     
     def get_codet5p(self):
         return T5ForConditionalGeneration.from_pretrained(self.checkpoint)
