@@ -65,7 +65,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output_dir", type=str, default="codet5p-220m-running", help="Output directory for fine-tuned model")
     parser.add_argument("--overwrite_output_dir", type=bool, default=False)
     parser.add_argument("--num_train_epochs", type=int, default=3)
-    parser.add_argument("--weight_decay", type=int, default=0)
+    parser.add_argument("--weight_decay", type=float, default=0.0)
     parser.add_argument("--evaluation_strategy", type=str, default="no")
     parser.add_argument("--logging_strategy", type=str, default="steps")
     parser.add_argument("--logging_steps", type=int, default=500)
