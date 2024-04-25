@@ -26,6 +26,11 @@ class FineTunedCodet5Model:
         except Exception as e:
             logger.error(f"Error while generating: {e}")
             raise e
+        
+    def get_trainable_parameters(self) -> None:
+        print("=================")
+        print("Total parameters:", self.origin_model.num_parameters())
+        print("=================")
   
 
 # Load model    
