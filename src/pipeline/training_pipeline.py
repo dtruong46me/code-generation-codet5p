@@ -22,9 +22,8 @@ def training_pipeline(args: argparse.Namespace):
         # Load model from checkpoint
         if args.useqlora==True:
             model = load_qlora_model(args.checkpoint, args)
-            model.qlora_model = model.get_qlora_model(device_map="auto", trust_remote_code=True)
+            model.qlora_model = model.get_qlora_model()
             print(1)
-            model.get_trainable_parameters()
             model.qlora_model = model.get_peft(model.qlora_model, model.lora_config)
             print(2)
             model.get_trainable_parameters()
