@@ -30,7 +30,7 @@ class QLoraCodet5p(FineTunedCodet5Model):
             r=args.lora_rank,
             lora_alpha=args.lora_alpha,
             target_modules=args.target_modules,
-            lora_dropout=args.llora_dropout,
+            lora_dropout=args.lora_dropout,
             bias="none",
             task_type=TaskType.SEQ_2_SEQ_LM
         )
