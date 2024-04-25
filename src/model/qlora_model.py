@@ -1,11 +1,16 @@
 import logging
 import torch
 
+import os
+import sys
+
 import argparse
 
 from transformers import BitsAndBytesConfig, GenerationConfig, T5ForConditionalGeneration
 from peft import LoraConfig, PeftConfig, PeftModel, TaskType, get_peft_model, prepare_model_for_kbit_training
 
+path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+sys.path.insert(0, path)
 from codet5p import FineTunedCodet5Model
 
 logging.basicConfig(level=logging.INFO)
