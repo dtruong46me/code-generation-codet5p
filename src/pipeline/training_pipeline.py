@@ -9,6 +9,7 @@ sys.path.insert(0, path)
 from utils import *
 
 from model.codet5 import load_model
+from model.qlora_model import load_qlora_model
 from data.data_cleaning import clean_data
 from data.load_data import ingest_data
 
@@ -19,8 +20,19 @@ logger.setLevel(logging.INFO)
 def training_pipeline(args: argparse.Namespace):
     try:
         # Load model from checkpoint
-        model = load_model(args.checkpoint)
-        model.origin_model = model.get_codet5p()
+        if args.useqlora==True:
+            model = load_qlora_model(args.checkpoint, args)
+            model.qlora_model = model.get_qlora_model(device_map="auto", trust_remote_code=True)
+            print(1)
+            model.get_trainable_parameters()
+            model.qlora_model = model.get_peft(model.qlora_model, model.lora_config)
+            print(2)
+            model.get_trainable_parameters()
+        if args.uselora==True:
+            model = None
+        if args.useqlora==False and args.uselora==False:
+            model = load_model(args.checkpoint)
+            model.origin_model = model.get_codet5p()
         logger.info("Complete loading model!")
 
         # Load dataset from datapath
@@ -36,10 +48,18 @@ def training_pipeline(args: argparse.Namespace):
         logger.info("Complete loading training arguments!")
 
         # Load trainer
-        trainer = load_trainer(model=model.codet5, 
-                               training_args=training_args, 
-                               dataset=data, 
-                               tokenizer=model.tokenizer)
+        if args.useqlora==True:
+            trainer = load_trainer(model=model.qlora_model,
+                                   training_args=training_args,
+                                   datasets=data,
+                                   tokenizer=model.tokenizer)
+        if args.uselora==True:
+            trainer = None
+        if args.userqlora==False and args.uselora==False:
+            trainer = load_trainer(model=model.origin_model, 
+                                training_args=training_args, 
+                                dataset=data, 
+                                tokenizer=model.tokenizer)
         logger.info("Complete loading trainer!")
 
         # Train model

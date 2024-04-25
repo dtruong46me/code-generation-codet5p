@@ -13,6 +13,7 @@ def load_training_arguments(args):
             output_dir=args.output_dir,
             overwrite_output_dir=args.overwrite_output_dir,
             num_train_epochs=args.num_train_epochs,
+            weight_decay=args.weight_decay,
             evaluation_strategy=args.evaluation_strategy,
             logging_strategy=args.logging_strategy,
             logging_steps=args.logging_steps,
@@ -24,6 +25,7 @@ def load_training_arguments(args):
             per_device_eval_batch_size=args.per_device_eval_batch_size,
             gradient_accumulation_steps=args.gradient_accumulation_steps,
             learning_rate=args.learning_rate,
+            push_to_hub=args.push_to_hub,
             report_to=args.report_to,
             run_name=args.run_name
         )
@@ -73,12 +75,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--save_safetensors", type=bool, default=True)
     parser.add_argument("--per_device_train_batch_size", type=int, default=2)
     parser.add_argument("--per_device_eval_batch_size", type=int, default=2)
-    parser.add_argument("--gradient_accumulation_steps", type=int, default=4)
+    parser.add_argument("--gradient_accumulation_steps", type=int, default=1)
     parser.add_argument("--learning_rate", type=int, default=0.00005)
     parser.add_argument("--push_to_hub", type=bool, default=True)
     parser.add_argument("--report_to", type=str, default="wandb")
     parser.add_argument("--run_name", type=str, default="codet5p-220m-running")
     parser.add_argument("--datapath", type=str, default="mbpp")
+    parser.add_argument("--uselora", type=bool, default=False)
+    parser.add_argument("--userqlora", type=bool, default=False)
+    parser.add_argument("--lora_rank", type=int, default=16)
+    parser.add_argument("--lora_alpha", type=int, default=32)
+    parser.add_argument("--target_modules", type=list, default=["q", "v"])
+    parser.add_argument("--lora_dropout", type=float, default=0.05)
     args = parser.parse_args()
     return args
 
