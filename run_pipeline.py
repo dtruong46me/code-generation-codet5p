@@ -36,6 +36,7 @@ if __name__=='__main__':
             os.environ["HUGGINGFACE_TOKEN"] = huggingface_hub_token
 
     if wandb_token:
+            os.environ["WANDB_PROJECT"] = "code_generation"
             os.environ["WANDB_API_KEY"] = wandb_token
  
     

@@ -1,10 +1,12 @@
 import logging
 import torch
-from codet5 import FineTunedCodet5Model
+
 import argparse
 
 from transformers import BitsAndBytesConfig, GenerationConfig, T5ForConditionalGeneration
 from peft import LoraConfig, PeftConfig, PeftModel, TaskType, get_peft_model, prepare_model_for_kbit_training
+
+from codet5p import FineTunedCodet5Model
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
