@@ -31,6 +31,9 @@ if __name__=='__main__':
     huggingface_hub_token = args.huggingface_hub_token
     wandb_token = args.wandb_token
 
+    print(wandb_token)
+    print(huggingface_hub_token)
+
 
     if huggingface_hub_token:
         os.environ["HUGGINGFACE_TOKEN"] = huggingface_hub_token
