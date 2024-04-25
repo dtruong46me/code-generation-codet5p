@@ -82,7 +82,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--run_name", type=str, default="codet5p-220m-running")
     parser.add_argument("--datapath", type=str, default="mbpp")
     parser.add_argument("--uselora", type=bool, default=False)
-    parser.add_argument("--userqlora", type=bool, default=False)
+    parser.add_argument("--useqlora", type=bool, default=False)
     parser.add_argument("--lora_rank", type=int, default=16)
     parser.add_argument("--lora_alpha", type=int, default=32)
     parser.add_argument("--target_modules", type=list, default=["q", "v"])
