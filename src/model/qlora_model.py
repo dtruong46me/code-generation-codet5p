@@ -35,8 +35,8 @@ class QLoraCodet5p(FineTunedCodet5Model):
     def get_peft(self, model, config):
         return get_peft_model(model, config)
     
-    def get_trainable_parameters(self):
-        return self.qlora_model.print_trainable_parameters()
+    def get_trainable_parameters(self) -> None:
+        self.qlora_model.print_trainable_parameters()
   
     
 # Load Qlora model
@@ -50,12 +50,11 @@ def load_qlora_model(checkpoint):
     
 if __name__=='__main__':
     args = argparse.ArgumentParser()
-    args.add_argument("--checkpoint", default="Salesforce/codet5p-770m")
+    args.add_argument("--checkpoint", type=str, default="Salesforce/codet5p-770m")
     args = args.parse_args()
     # checkpoint = "Salesforce/codet5p-770m"
     model = QLoraCodet5p(args.checkpoint)
     model.qlora_model = model.get_qlora_model()
 
     model.qlora_model = model.get_peft(model=model.qlora_model, config=model.lora_config)
-    trainable_params = model.get_trainable_parameters()
-    print("Trainable Parameters: ", trainable_params)
+    model.get_trainable_parameters()
