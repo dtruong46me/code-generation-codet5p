@@ -23,9 +23,7 @@ def training_pipeline(args: argparse.Namespace):
         if args.useqlora==True:
             model = load_qlora_model(args.checkpoint, args)
             model.qlora_model = model.get_qlora_model()
-            print(1)
             model.qlora_model = model.get_peft(model.qlora_model, model.lora_config)
-            print(2)
             model.get_trainable_parameters()
         if args.uselora==True:
             model = None
@@ -50,7 +48,7 @@ def training_pipeline(args: argparse.Namespace):
         if args.useqlora==True:
             trainer = load_trainer(model=model.qlora_model,
                                    training_args=training_args,
-                                   datasets=data,
+                                   dataset=data,
                                    tokenizer=model.tokenizer)
         if args.uselora==True:
             trainer = None
