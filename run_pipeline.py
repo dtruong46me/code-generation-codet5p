@@ -33,14 +33,14 @@ if __name__=='__main__':
 
 
     if huggingface_hub_token:
-            os.environ["HUGGINGFACE_TOKEN"] = huggingface_hub_token
+        os.environ["HUGGINGFACE_TOKEN"] = huggingface_hub_token
 
     if wandb_token:
-            os.environ["WANDB_PROJECT"] = "code_generation"
-            os.environ["WANDB_API_KEY"] = wandb_token
+        os.environ["WANDB_PROJECT"] = "code_generation"
+        os.environ["WANDB_API_KEY"] = wandb_token
  
     
     login(token=huggingface_hub_token)
-    wandb.login(key=wandb_token)
+#     wandb.login(key=wandb_token)
 
     training_pipeline(args)

@@ -3,6 +3,7 @@ from abc import ABC, abstractclassmethod
 from datasets import DatasetDict, Dataset
 from transformers import AutoTokenizer
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class DataStrategy(ABC):

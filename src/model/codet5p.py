@@ -19,7 +19,7 @@ class FineTunedCodet5Model:
         try:
             logger.info("Generating output for input: {input_text}")
             input_ids = self.tokenizer.encode(input_text, return_tensors="pt").to(self.device)
-            outputs = self.codet5.generate(input_ids, **kwargs)
+            outputs = self.origin_model.generate(input_ids, **kwargs)
             generated_text = self.tokenizer.decode([token for token in outputs[0] if token != -100], skip_special_tokens=True)
             return generated_text
 

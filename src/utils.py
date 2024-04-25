@@ -76,6 +76,7 @@ class WandBCallback(TrainerCallback):
 
 
 def load_trainer(model, training_args, dataset, tokenizer):
+    # callbacks = [WandBCallback(model.tokenizer)]
     trainer = Seq2SeqTrainer(
         model=model,
         args=training_args,

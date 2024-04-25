@@ -13,8 +13,8 @@ from model.qlora_model import load_qlora_model
 from data.data_cleaning import clean_data
 from data.load_data import ingest_data
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 def training_pipeline(args: argparse.Namespace):

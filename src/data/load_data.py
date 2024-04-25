@@ -1,6 +1,7 @@
 import logging
 from datasets import load_dataset, Dataset, concatenate_datasets
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class IngestDataset:
