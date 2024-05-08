@@ -31,15 +31,13 @@ if __name__=='__main__':
     huggingface_hub_token = args.huggingface_hub_token
     wandb_token = args.wandb_token
 
-    """if tokens:
-        huggingface_hub_token = tokens["huggingface_hub_token"]
-        wandb_token = tokens["wandb_token"]"""
 
     if huggingface_hub_token:
             os.environ["HUGGINGFACE_TOKEN"] = huggingface_hub_token
 
     if wandb_token:
             os.environ["WANDB_API_KEY"] = wandb_token
+ 
     
     login(token=huggingface_hub_token)
     wandb.login(key=wandb_token)
