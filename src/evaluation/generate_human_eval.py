@@ -3,7 +3,7 @@ import torch
 from transformers import T5ForConditionalGeneration, AutoTokenizer
 
 checkpoint = "Salesforce/codet5p-220m"
-device = "cpu" # for GPU usage or "cpu" for CPU usage
+device = "cuda" if torch.cuda.is_available() else "cpu" # for GPU usage or "cpu" for CPU usage
 
 tokenizer = AutoTokenizer.from_pretrained(checkpoint)
 model = T5ForConditionalGeneration.from_pretrained(checkpoint).to(device)
