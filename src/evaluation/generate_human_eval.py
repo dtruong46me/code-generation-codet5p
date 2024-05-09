@@ -11,7 +11,7 @@ def main():
     #parser.add_argument('--start_index', type=int, default=0, help="")
     #parser.add_argument('--end_index', type=int, default=164, help="")
     parser.add_argument('--N', type=int, default=200, help="")
-
+    parser.add_argument('--max_len', type=int, default=600, help="")
     parser.add_argument('--overwrite', action='store_true', help='')
     args = parser.parse_args()
 
@@ -23,7 +23,7 @@ def main():
 
     def generate_one_completion(prompt):
         inputs = tokenizer.encode(prompt, return_tensors="pt").to(device)
-        outputs = model.generate(inputs, max_length=10)
+        outputs = model.generate(inputs, max_length=args.max_len)
         return tokenizer.decode(outputs[0], skip_special_tokens=True)
     
     problems = read_problems()
