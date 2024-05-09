@@ -19,7 +19,7 @@ if __name__=='__main__':
     # datapath = "mbpp"
     # configpath = os.path.abspath(os.path.join(os.path.dirname(__file__), "config.yaml"))
     args = parse_args()
-    print(args)
+
     checkpoint = args.checkpoint
     datapath = args.datapath
     configpath = args.configpath
@@ -31,15 +31,19 @@ if __name__=='__main__':
     huggingface_hub_token = args.huggingface_hub_token
     wandb_token = args.wandb_token
 
+    print(wandb_token)
+    print(huggingface_hub_token)
+
 
     if huggingface_hub_token:
-            os.environ["HUGGINGFACE_TOKEN"] = huggingface_hub_token
+        os.environ["HUGGINGFACE_TOKEN"] = huggingface_hub_token
 
-    if wandb_token:
-            os.environ["WANDB_API_KEY"] = wandb_token
+    if wandb_token != "":
+        os.environ["WANDB_PROJECT"] = "code_generation"
+        os.environ["WANDB_API_KEY"] = wandb_token
  
     
     login(token=huggingface_hub_token)
-    wandb.login(key=wandb_token)
+#     wandb.login(key=wandb_token)
 
     training_pipeline(args)
