@@ -71,7 +71,7 @@ def main():
 
     model = AutoModelForSeq2SeqLM.from_pretrained(args.model,
                                                   trust_remote_code=True,  # False for 220m and 770m models
-                                                  torch_dtype=torch.float16,
+                                                #   torch_dtype=torch.float16,
                                                   low_cpu_mem_usage=True)
     model.eval()
     model.to(device)

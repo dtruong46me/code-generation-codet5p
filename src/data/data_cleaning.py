@@ -4,6 +4,7 @@ from datasets import Dataset
 import sys
 import os
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 path = os.path.abspath(os.path.dirname(__file__))
@@ -39,7 +40,7 @@ def clean_data(data: Dataset, *args):
         return tokenized_data
 
     except Exception as e:
-        logger.error("Error while handling data")
+        logger.error(f"Error while handling data: {e}")
         raise e
     
 # if __name__=='__main__':

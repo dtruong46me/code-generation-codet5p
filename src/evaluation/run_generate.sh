@@ -1,4 +1,4 @@
-model=codet5p-220m-py
+smodel=codet5p-220m-py
 temp=0.2
 max_len=800
 pred_num=200
@@ -17,13 +17,13 @@ for ((i = 0; i < $gpu_num; i++)); do
   start_index=$((i * 82))
   end_index=$(((i + 1) * 82))
 
-  gpu=$((i))
-  echo 'Running process #' ${i} 'from' $start_index 'to' $end_index 'on GPU' ${gpu}
-  ((index++))
-  (
-    CUDA_VISIBLE_DEVICES=$gpu python generate_codet5p_py.py --model Salesforce/${model} \
-      --start_index ${start_index} --end_index ${end_index} --temperature ${temp} \
-      --num_seqs_per_iter ${num_seqs_per_iter} --N ${pred_num} --max_len ${max_len} --output_path ${output_path}
-  ) &
-  if (($index % $gpu_num == 0)); then wait; fi
+    gpu=$((i))
+    echo 'Running process #' ${i} 'from' $start_index 'to' $end_index 'on GPU' ${gpu}
+    ((index++))
+    (
+        CUDA_VISIBLE_DEVICES=$gpu python /kaggle/working/code-generation-codet5p/src/evaluation/generate_codet5p_py.py --model Salesforce/${model} \
+        --start_index ${start_index} --end_index ${end_index} --temperature ${temp} \
+        --num_seqs_per_iter ${num_seqs_per_iter} --N ${pred_num} --max_len ${max_len} --output_path ${output_path}
+    ) &
+    if (($index % $gpu_num == 0)); then wait; fi
 done

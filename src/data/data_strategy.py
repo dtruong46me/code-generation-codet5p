@@ -2,8 +2,8 @@ import logging
 from abc import ABC, abstractclassmethod
 from datasets import DatasetDict, Dataset
 from transformers import AutoTokenizer
-from load_data import ingest_data
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class DataStrategy(ABC):
@@ -43,13 +43,33 @@ class DataTokenizingStrategy(DataStrategy):
     def handle_data(self, data: Dataset, tokenizer) -> Dataset:
         try:
             tokenizer.pad_token = tokenizer.eos_token
-            tokenized_inputs = tokenizer(data["text"], padding="max_length", truncation=True, return_tensors="pt")
-            tokenized_targets = tokenizer(data["code"], padding="max_length", truncation=True, return_tensors="pt")
+            max_input_length = 600
+            max_target_length = 320
+
+
+            tokenized_inputs = tokenizer(
+                data["text"],
+                padding="max_length",
+                max_length=max_input_length,
+                truncation=True,
+                return_tensors="pt"
+            )
             
+            tokenized_targets = tokenizer(
+                data["code"],
+                padding="max_length",
+                max_length=max_target_length,
+                truncation=True,
+                return_tensors="pt"
+            )
+
+            labels = tokenized_targets.input_ids
+            labels[labels == 0] = -100
+
             data = Dataset.from_dict({
-                "input_ids": tokenized_inputs.input_ids,
-                "attention_mask": tokenized_inputs.attention_mask,
-                "labels": tokenized_targets.input_ids
+                          "input_ids": tokenized_inputs.input_ids,
+                          "attention_mask": tokenized_inputs.attention_mask,
+                          "labels": labels
             })
 
             logger.info("Complete tokenizing dataset")

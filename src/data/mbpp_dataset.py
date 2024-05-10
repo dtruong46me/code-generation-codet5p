@@ -1,6 +1,7 @@
 
 import logging
 from data_strategy import *
+from load_data import ingest_data
 
 class MBPP_Dataset:
     def __init__(self, datapath: str) -> None:
