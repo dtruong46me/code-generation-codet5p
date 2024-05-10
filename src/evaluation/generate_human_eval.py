@@ -27,6 +27,7 @@ def main():
         inputs = tokenizer.encode(prompt, return_tensors="pt").to(device)
         outputs = model.generate(inputs, 
                                  max_length=args.max_len,
+                                 do_sample=True,
                                  top_p=args.top_p,
                                  temperature=args.temperature)
         return tokenizer.decode(outputs[0], skip_special_tokens=True)
