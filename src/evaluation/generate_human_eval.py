@@ -8,10 +8,12 @@ def main():
 
     parser.add_argument('--model', type=str, default='Salesforce/codet5p-220m-py', help="")
     parser.add_argument('--output_path', type=str, help="")
-    #parser.add_argument('--start_index', type=int, default=0, help="")
-    #parser.add_argument('--end_index', type=int, default=164, help="")
+    parser.add_argument('--start_index', type=int, default=0, help="")
+    parser.add_argument('--end_index', type=int, default=164, help="")
     parser.add_argument('--N', type=int, default=200, help="")
     parser.add_argument('--max_len', type=int, default=600, help="")
+    parser.add_argument('--temperature', type=float, default=0.8)
+    parser.add_argument('--top_p', type=float, default=0.95)
     parser.add_argument('--overwrite', action='store_true', help='')
     args = parser.parse_args()
 
@@ -23,7 +25,10 @@ def main():
 
     def generate_one_completion(prompt):
         inputs = tokenizer.encode(prompt, return_tensors="pt").to(device)
-        outputs = model.generate(inputs, max_length=args.max_len)
+        outputs = model.generate(inputs, 
+                                 max_length=args.max_len,
+                                 top_p=args.top_p,
+                                 temperature=args.temperature)
         return tokenizer.decode(outputs[0], skip_special_tokens=True)
     
     problems = read_problems()
