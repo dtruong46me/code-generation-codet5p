@@ -34,7 +34,6 @@ def load_training_arguments(args):
 
             metric_for_best_model=args.metric_for_best_model,
             save_total_limit=args.save_total_limit,
-            save_safetensors=args.save_safetensors,
 
             push_to_hub=args.push_to_hub,
             report_to=args.report_to,
