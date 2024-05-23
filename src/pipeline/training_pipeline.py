@@ -24,6 +24,7 @@ def training_pipeline(args: argparse.Namespace):
 
         if args.uselora==True:
             model = load_lora_model(args.checkpoint, args)
+            model.lora_model = model.get_lora_model()
             model.lora_model = model.get_peft(model.lora_model, model.lora_config)
             model.get_trainable_parameters()
             
