@@ -3,5 +3,5 @@ huggingface_hub
 accelerate
 peft
 bitsandbytes
-human_eval
+human-eval
 streamlit

@@ -77,7 +77,7 @@ def main():
     model.to(device)
 
     # for larger LLMs such as 2B, 6B, and 16B, we need to pass the text prompt to the decoder
-    prompt_to_decoder = True if any([size in args.model for size in ['2b', '6b', '16b']]) else False
+    #prompt_to_decoder = True if any([size in args.model for size in ['2b', '6b', '16b']]) else False
 
     print(f"Loaded {args.model}.")
     for i in tqdm(range(num_samples), ncols=0, total=num_samples):
@@ -112,8 +112,8 @@ def main():
 
             with torch.no_grad():
                 if args.decoding_style == 'sampling':
-                    if prompt_to_decoder:
-                        gen_tokens = model.generate(**encoding,
+                    #if prompt_to_decoder:
+                    gen_tokens = model.generate(**encoding,
                                                     decoder_input_ids=encoding_decoder['input_ids'],
                                                     do_sample=True,
                                                     temperature=args.temperature,
@@ -122,21 +122,21 @@ def main():
                                                     decoder_start_token_id=tokenizer.pad_token_id,
                                                     eos_token_id=tokenizer.eos_token_id,
                                                     top_p=0.95)
-                    else:
-                        gen_tokens = model.generate(**encoding,
-                                                    do_sample=True,
-                                                    temperature=args.temperature,
-                                                    max_length=args.max_len,
-                                                    num_return_sequences=args.num_seqs_per_iter,
-                                                    eos_token_id=tokenizer.eos_token_id,
-                                                    top_p=0.95)
+                    # else:
+                    #     gen_tokens = model.generate(**encoding,
+                    #                                 do_sample=True,
+                    #                                 temperature=args.temperature,
+                    #                                 max_length=args.max_len,
+                    #                                 num_return_sequences=args.num_seqs_per_iter,
+                    #                                 eos_token_id=tokenizer.eos_token_id,
+                    #                                 top_p=0.95)
 
             if gen_tokens is not None:
-                if prompt_to_decoder:
-                    gen_tokens = gen_tokens[:, encoding_decoder['input_ids'].shape[-1]:]
+                #if prompt_to_decoder:
+                gen_tokens = gen_tokens[:, encoding_decoder['input_ids'].shape[-1]:]
                 gen_seqs = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
-            else:
-                gen_seqs = None
+            #else:
+                #gen_seqs = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
 
             if gen_seqs is not None:
                 assert len(ids_batch) == 1
