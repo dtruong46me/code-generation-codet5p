@@ -28,7 +28,7 @@ class LoraCodet5p(FineTunedCodet5Model):
         self.generation_config = GenerationConfig(max_new_tokens=200, temperature=0.7, top_p=0.7)
     
     def get_lora_model(self, **kwargs):
-        print(f"Get QLoRA model")
+        print(f"Get LoRA model")
         return T5ForConditionalGeneration.from_pretrained(self.checkpoint, **kwargs)
     
     def get_peft(self, model, config):

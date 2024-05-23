@@ -16,13 +16,13 @@ from data.load_data import ingest_data
 def training_pipeline(args: argparse.Namespace):
     try:
         # Load model from checkpoint
-        if args.useqlora==True:
+        if args.useqlora==True and args.uselora==False:
             model = load_qlora_model(args.checkpoint, args)
             model.qlora_model = model.get_qlora_model()
             model.qlora_model = model.get_peft(model.qlora_model, model.lora_config)
             model.get_trainable_parameters()
 
-        if args.uselora==True:
+        if args.uselora==True and args.useqlora==False:
             model = load_lora_model(args.checkpoint, args)
             model.lora_model = model.get_lora_model()
             model.lora_model = model.get_peft(model.lora_model, model.lora_config)
@@ -31,6 +31,7 @@ def training_pipeline(args: argparse.Namespace):
         if args.useqlora==False and args.uselora==False:
             model = load_model(args.checkpoint)
             model.origin_model = model.get_codet5p()
+
         print("Complete loading model!")
 
         # Load dataset from datapath
@@ -46,13 +47,14 @@ def training_pipeline(args: argparse.Namespace):
         print("Complete loading training arguments!")
 
         # Load trainer
-        if args.useqlora==True:
+        if args.useqlora==True and args.uselora==False:
             print(args.uselora, args.useqlora)
             trainer = load_trainer(model=model.qlora_model,
                                    training_args=training_args,
                                    dataset=data,
                                    tokenizer=model.tokenizer)
-        if args.uselora==True:
+            
+        if args.uselora==True and args.useqlora==False:
             print(args.uselora, args.useqlora)
             trainer = load_trainer(model=model.lora_model,
                                    training_args=training_args,
