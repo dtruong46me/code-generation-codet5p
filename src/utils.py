@@ -93,7 +93,7 @@ def parse_args() -> argparse.Namespace:
 
     parser.add_argument("--logging_strategy", type=str, default="steps")
     parser.add_argument("--logging_steps", type=int, default=500)
-    parser.add_argument("--save_strategy", type=str, default="steps")
+    parser.add_argument("--save_total_limit", type=int, default=1)
 
     parser.add_argument("--metric_for_best_model", type=str, default="eval_loss")
     parser.add_argument("--save_total_limit", type=str, default=0)

@@ -14,6 +14,7 @@ def main():
     parser.add_argument('--N', type=int, default=200, help="")
     parser.add_argument('--max_len', type=int, default=600, help="")
     parser.add_argument('--temperature', type=float, default=0.8)
+    parser.add_argument("--top_k", type=int, default=10)
     parser.add_argument('--top_p', type=float, default=0.95)
     parser.add_argument('--overwrite', action='store_true', help='')
     args = parser.parse_args()
