@@ -15,6 +15,10 @@ from data.load_data import ingest_data
 
 def training_pipeline(args: argparse.Namespace):
     try:
+        print("=========================================")
+        print('\n'.join(f' + {k}={v}' for k, v in vars(args).items()))
+        print("=========================================")
+        
         # Load model from checkpoint
         if args.useqlora==True and args.uselora==False:
             model = load_qlora_model(args.checkpoint, args)

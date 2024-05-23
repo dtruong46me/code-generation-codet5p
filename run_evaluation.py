@@ -19,6 +19,10 @@ def main():
     parser.add_argument('--overwrite', action='store_true', help='')
     args = parser.parse_args()
 
+    print("=========================================")
+    print('\n'.join(f' + {k}={v}' for k, v in vars(args).items()))
+    print("=========================================")
+    
     # Load model and tokenizer
     checkpoint = args.model
     device = "cuda" if torch.cuda.is_available() else "cpu" # for GPU usage or "cpu" for CPU usage
