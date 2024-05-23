@@ -96,7 +96,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--save_total_limit", type=int, default=1)
 
     parser.add_argument("--metric_for_best_model", type=str, default="eval_loss")
-    parser.add_argument("--save_total_limit", type=str, default=0)
+    parser.add_argument("--load_best_model_at_end", type=bool, default=False)
     
     parser.add_argument("--push_to_hub", type=bool, default=False)
     parser.add_argument("--report_to", type=str, default="wandb")
