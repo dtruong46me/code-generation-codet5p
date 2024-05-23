@@ -38,6 +38,12 @@ def training_pipeline(args: argparse.Namespace):
             print(args.uselora, args.useqlora)
             model = load_model(args.checkpoint)
             model.origin_model = model.get_codet5p()
+        
+        if args.uselora==True and args.useqlora==True:
+            print("=================")
+            print("Only one of QLoRA and LoRA can be used at a time!")
+            print("=================")
+            return None
 
         print("Complete loading model!")
 
