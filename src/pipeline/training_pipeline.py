@@ -24,7 +24,8 @@ def training_pipeline(args: argparse.Namespace):
 
         if args.uselora==True:
             model = load_lora_model(args.checkpoint, args)
-            model.lora_model
+            model.lora_model = model.get_peft(model.lora_model, model.lora_config)
+            model.get_trainable_parameters()
             
         if args.useqlora==False and args.uselora==False:
             model = load_model(args.checkpoint)
@@ -45,17 +46,20 @@ def training_pipeline(args: argparse.Namespace):
 
         # Load trainer
         if args.useqlora==True:
+            print(args.uselora, args.useqlora)
             trainer = load_trainer(model=model.qlora_model,
                                    training_args=training_args,
                                    dataset=data,
                                    tokenizer=model.tokenizer)
         if args.uselora==True:
+            print(args.uselora, args.useqlora)
             trainer = load_trainer(model=model.lora_model,
                                    training_args=training_args,
                                    dataset=data,
                                    tokenizer=model.tokenizer)
             
         if args.useqlora==False and args.uselora==False:
+            print(args.uselora, args.useqlora)
             trainer = load_trainer(model=model.origin_model, 
                                 training_args=training_args, 
                                 dataset=data, 
