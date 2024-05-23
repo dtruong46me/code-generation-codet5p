@@ -18,21 +18,24 @@ def training_pipeline(args: argparse.Namespace):
         print("=========================================")
         print('\n'.join(f' + {k}={v}' for k, v in vars(args).items()))
         print("=========================================")
-        
+
         # Load model from checkpoint
         if args.useqlora==True and args.uselora==False:
+            print(args.uselora, args.useqlora)
             model = load_qlora_model(args.checkpoint, args)
             model.qlora_model = model.get_qlora_model()
             model.qlora_model = model.get_peft(model.qlora_model, model.lora_config)
             model.get_trainable_parameters()
 
         if args.uselora==True and args.useqlora==False:
+            print(args.uselora, args.useqlora)
             model = load_lora_model(args.checkpoint, args)
             model.lora_model = model.get_lora_model()
             model.lora_model = model.get_peft(model.lora_model, model.lora_config)
             model.get_trainable_parameters()
             
         if args.useqlora==False and args.uselora==False:
+            print(args.uselora, args.useqlora)
             model = load_model(args.checkpoint)
             model.origin_model = model.get_codet5p()
 
