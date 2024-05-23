@@ -1,5 +1,3 @@
-import logging
-
 import os
 import sys
 import argparse
@@ -10,11 +8,9 @@ from utils import *
 
 from model.codet5p import load_model
 from model.qlora_model import load_qlora_model
+from model.lora_model import load_lora_model
 from data.data_cleaning import clean_data
 from data.load_data import ingest_data
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 def training_pipeline(args: argparse.Namespace):
@@ -23,27 +19,29 @@ def training_pipeline(args: argparse.Namespace):
         if args.useqlora==True:
             model = load_qlora_model(args.checkpoint, args)
             model.qlora_model = model.get_qlora_model()
-            print(model.device)
             model.qlora_model = model.get_peft(model.qlora_model, model.lora_config)
             model.get_trainable_parameters()
+
         if args.uselora==True:
-            model = None
+            model = load_lora_model(args.checkpoint, args)
+            model.lora_model
+            
         if args.useqlora==False and args.uselora==False:
             model = load_model(args.checkpoint)
             model.origin_model = model.get_codet5p()
-        logger.info("Complete loading model!")
+        print("Complete loading model!")
 
         # Load dataset from datapath
         data = ingest_data(args.datapath)
-        logger.info("Complete loading dataset!")
+        print("Complete loading dataset!")
 
         # Clean dataset with strategy
         data = clean_data(data, model.tokenizer)
-        logger.info("Complete cleaning dataset!")
+        print("Complete cleaning dataset!")
 
         # Load training arguments
         training_args = load_training_arguments(args)
-        logger.info("Complete loading training arguments!")
+        print("Complete loading training arguments!")
 
         # Load trainer
         if args.useqlora==True:
@@ -52,24 +50,28 @@ def training_pipeline(args: argparse.Namespace):
                                    dataset=data,
                                    tokenizer=model.tokenizer)
         if args.uselora==True:
-            trainer = None
+            trainer = load_trainer(model=model.lora_model,
+                                   training_args=training_args,
+                                   dataset=data,
+                                   tokenizer=model.tokenizer)
+            
         if args.useqlora==False and args.uselora==False:
             trainer = load_trainer(model=model.origin_model, 
                                 training_args=training_args, 
                                 dataset=data, 
                                 tokenizer=model.tokenizer)
-        logger.info("Complete loading trainer!")
+        print("Complete loading trainer!")
 
         # Train model
         trainer.train()
-        logger.info("Complete training!")
+        print("Complete training!")
 
         # Push trainer to Huggingface Hub
         trainer.push_to_hub()
-        logger.info("Complete pushing model to hub!")
+        print("Complete pushing model to hub!")
 
     except Exception as e:
-        logger.error("Error while training: {e}")
+        print("Error while training: {e}")
         raise
 
 # if __name__=='__main__':

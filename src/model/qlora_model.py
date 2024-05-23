@@ -1,4 +1,3 @@
-import logging
 import torch
 
 import os
@@ -13,9 +12,6 @@ path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 sys.path.insert(0, path)
 from codet5p import FineTunedCodet5Model
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 class QLoraCodet5p(FineTunedCodet5Model):
     def __init__(self, checkpoint: str, args: argparse.Namespace):
         super().__init__(checkpoint)
@@ -29,7 +25,7 @@ class QLoraCodet5p(FineTunedCodet5Model):
         self.lora_config = LoraConfig(
             r=args.lora_rank,
             lora_alpha=args.lora_alpha,
-            target_modules=args.target_modules,
+            target_modules=args.target_modules.split(","),
             lora_dropout=args.lora_dropout,
             bias="none",
             task_type=TaskType.SEQ_2_SEQ_LM
@@ -37,11 +33,11 @@ class QLoraCodet5p(FineTunedCodet5Model):
         self.generation_config = GenerationConfig(max_new_tokens=200, temperature=0.7, top_p=0.7)
 
     def get_qlora_model(self, **kwargs):
-        logger.info(f"Get QLoRA model")
+        print(f"Get QLoRA model")
         return T5ForConditionalGeneration.from_pretrained(self.checkpoint, quantization_config=self.bnb_config, **kwargs)
     
     def get_peft(self, model, config):
-        logger.info(f"Get PEFT model")
+        print(f"Get PEFT model")
         return get_peft_model(model, config)
     
     def get_trainable_parameters(self) -> None:
@@ -56,7 +52,7 @@ def load_qlora_model(checkpoint: str, args: argparse.Namespace):
         return QLoraCodet5p(checkpoint, args)
 
     except Exception as e:
-        logger.error(f"Error while loading QLoRA model: {e}")
+        print(f"Error while loading QLoRA model: {e}")
         raise e
     
 # if __name__=='__main__':
