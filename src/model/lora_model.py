@@ -35,7 +35,7 @@ class LoraCodet5p(FineTunedCodet5Model):
     
     def get_trainable_parameters(self) -> None:
         print("=================")
-        self.lora_model.print_trainable_parameters()
+        self.origin_model.print_trainable_parameters()
         print("=================")
 
 
