@@ -101,8 +101,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--report_to", type=str, default="wandb")
     parser.add_argument("--run_name", type=str, default="codet5p-220m-running")
 
-    parser.add_argument("--uselora", action="store_true")
-    parser.add_argument("--useqlora", action="store_true")
+    parser.add_argument("--uselora", action="store_true", default=False)
+    parser.add_argument("--useqlora", action="store_true", default=False)
 
     parser.add_argument("--lora_rank", type=int, default=16)
     parser.add_argument("--lora_alpha", type=int, default=32)
@@ -110,7 +110,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lora_dropout", type=float, default=0.05)
 
     parser.add_argument("--temperature", type=float, default=1.0)
-    parser.add_argument("--top_k", type=int, default=20)
+    parser.add_argument("--top_k", type=int, default=50)
     parser.add_argument("--top_p", type=float, default=1.0)
     parser.add_argument("--max_new_tokens", type=int, default=256)
     args = parser.parse_args()
