@@ -53,7 +53,7 @@ def training_pipeline(args: argparse.Namespace):
         print("Complete loading dataset!")
 
         # Clean dataset with strategy
-        data = clean_data(data, model.tokenizer, args.max_input_length, args.max_target_length)
+        data = clean_data(data, model.tokenizer)
         print("Complete cleaning dataset!")
 
         # Load training arguments

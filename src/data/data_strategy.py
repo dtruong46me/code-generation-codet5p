@@ -37,9 +37,11 @@ class DataDivideStrategy(DataStrategy):
             raise e
 
 class DataTokenizingStrategy(DataStrategy):
-    def handle_data(self, data: Dataset, tokenizer, max_input_length, max_target_length) -> Dataset:
+    def handle_data(self, data: Dataset, tokenizer) -> Dataset:
         try:
             tokenizer.pad_token = tokenizer.eos_token
+            max_input_length = 128
+            max_target_length = 512
 
             tokenized_inputs = tokenizer(
                 data["text"],
