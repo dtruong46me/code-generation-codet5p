@@ -108,6 +108,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lora_alpha", type=int, default=32)
     parser.add_argument("--target_modules", type=str, default="q,k")
     parser.add_argument("--lora_dropout", type=float, default=0.05)
+
+    parser.add_argument("--temperature", type=float, default=1.0)
+    parser.add_argument("--top_k", type=int, default=20)
+    parser.add_argument("--top_p", type=float, default=1.0)
+    parser.add_argument("--max_new_tokens", type=int, default=256)
     args = parser.parse_args()
     return args
 

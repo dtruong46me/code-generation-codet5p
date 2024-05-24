@@ -10,7 +10,10 @@ class FineTunedCodet5Model:
         self.origin_model = None
         self.args = args
 
-        self.generation_config = GenerationConfig(max_new_tokens=512, do_sample=True, temperature=1.0, top_k=20, top_p=0.9)
+        self.generation_config = GenerationConfig(max_new_tokens=args.max_new_tokens, 
+                                                  do_sample=True, 
+                                                  temperature=args.temperature, 
+                                                  top_k=args.top_k, top_p=args.top_p)
     
     def get_codet5p(self):
         if self.checkpoint=="Salesforce/codet5p-2b" or self.checkpoint=="Salesforce/codet5p-6b":
@@ -23,7 +26,7 @@ class FineTunedCodet5Model:
         try:
             print(f"Generating output for input: {input_text}")
             input_ids = self.tokenizer.encode(input_text, return_tensors="pt").to(self.device)
-            outputs = self.origin_model.generate(input_ids, **kwargs)
+            outputs = self.origin_model.generate(input_ids, self.generation_config, **kwargs)
             generated_text = self.tokenizer.decode([token for token in outputs[0] if token != -100], skip_special_tokens=True)
             return generated_text
 

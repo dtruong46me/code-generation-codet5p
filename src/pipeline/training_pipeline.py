@@ -23,27 +23,30 @@ def training_pipeline(args: argparse.Namespace):
         if args.useqlora==True and args.uselora==False:
             print(args.uselora, args.useqlora)
             model = load_qlora_model(args.checkpoint, args)
-            model.qlora_model = model.get_qlora_model()
-            model.qlora_model = model.get_peft(model.qlora_model, model.lora_config)
+            model.origin_model = model.get_qlora_model()
+            model.origin_model = model.get_peft(model.origin_model, model.lora_config)
             model.get_trainable_parameters()
 
         if args.uselora==True and args.useqlora==False:
             print(args.uselora, args.useqlora)
             model = load_lora_model(args.checkpoint, args)
-            model.lora_model = model.get_lora_model()
-            model.lora_model = model.get_peft(model.lora_model, model.lora_config)
+            model.origin_model = model.get_lora_model()
+            model.origin_model = model.get_peft(model.origin_model, model.lora_config)
             model.get_trainable_parameters()
             
         if args.useqlora==False and args.uselora==False:
             print(args.uselora, args.useqlora)
             model = load_model(args.checkpoint)
             model.origin_model = model.get_codet5p()
+            model.get_trainable_parameters()
         
         if args.uselora==True and args.useqlora==True:
             print("=================")
             print("Only one of QLoRA and LoRA can be used at a time!")
             print("=================")
             return None
+
+        print(model.origin_model)
 
         print("Complete loading model!")
 
@@ -60,26 +63,10 @@ def training_pipeline(args: argparse.Namespace):
         print("Complete loading training arguments!")
 
         # Load trainer
-        if args.useqlora==True and args.uselora==False:
-            print(args.uselora, args.useqlora)
-            trainer = load_trainer(model=model.qlora_model,
-                                   training_args=training_args,
-                                   dataset=data,
-                                   tokenizer=model.tokenizer)
-            
-        if args.uselora==True and args.useqlora==False:
-            print(args.uselora, args.useqlora)
-            trainer = load_trainer(model=model.lora_model,
-                                   training_args=training_args,
-                                   dataset=data,
-                                   tokenizer=model.tokenizer)
-            
-        if args.useqlora==False and args.uselora==False:
-            print(args.uselora, args.useqlora)
-            trainer = load_trainer(model=model.origin_model, 
-                                training_args=training_args, 
-                                dataset=data, 
-                                tokenizer=model.tokenizer)
+        trainer = load_trainer(model=model.origin_model, 
+                            training_args=training_args, 
+                            dataset=data, 
+                            tokenizer=model.tokenizer)
         print("Complete loading trainer!")
 
         # Train model

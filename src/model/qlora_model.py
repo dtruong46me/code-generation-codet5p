@@ -21,7 +21,6 @@ class QLoraCodet5p(LoraCodet5p):
             bnb_4bit_quant_type="nf4",
             bnb_4bit_compute_dtype=torch.bfloat16
         )
-        self.qlora_model = None
 
     def get_qlora_model(self, **kwargs):
         print(f"Get QLoRA model")
@@ -29,7 +28,7 @@ class QLoraCodet5p(LoraCodet5p):
     
     def get_trainable_parameters(self) -> None:
         print("=================")
-        self.qlora_model.print_trainable_parameters()
+        self.origin_model.print_trainable_parameters()
         print("=================")
 
   

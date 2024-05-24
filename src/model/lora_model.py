@@ -24,7 +24,6 @@ class LoraCodet5p(FineTunedCodet5Model):
             bias="none",
             task_type=TaskType.SEQ_2_SEQ_LM
         )
-        self.lora_model = None
     
     def get_lora_model(self, **kwargs):
         print(f"Get LoRA model")
