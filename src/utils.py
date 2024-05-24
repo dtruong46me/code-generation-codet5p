@@ -3,7 +3,7 @@ import os
 from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, TrainerCallback, TrainingArguments, TrainerState, TrainerControl
 import argparse
 import logging
-import wandb
+import torch
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -113,6 +113,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--top_k", type=int, default=50)
     parser.add_argument("--top_p", type=float, default=1.0)
     parser.add_argument("--max_new_tokens", type=int, default=256)
+    
+    parser.add_argument("--torch_type", type=torch.dtype, default=torch.float32)
+    
     args = parser.parse_args()
     return args
 

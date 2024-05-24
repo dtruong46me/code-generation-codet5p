@@ -43,8 +43,8 @@ class DataTokenizingStrategy(DataStrategy):
     def handle_data(self, data: Dataset, tokenizer) -> Dataset:
         try:
             tokenizer.pad_token = tokenizer.eos_token
-            max_input_length = 600
-            max_target_length = 320
+            max_input_length = 256
+            max_target_length = 1024
 
 
             tokenized_inputs = tokenizer(
@@ -68,7 +68,7 @@ class DataTokenizingStrategy(DataStrategy):
 
             data = Dataset.from_dict({
                           "input_ids": tokenized_inputs.input_ids,
-                          "attention_mask": tokenized_inputs.attention_mask,
+                        #   "attention_mask": tokenized_inputs.attention_mask,
                           "labels": labels
             })
 
