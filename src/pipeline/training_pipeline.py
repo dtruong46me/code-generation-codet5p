@@ -36,7 +36,7 @@ def training_pipeline(args: argparse.Namespace):
             
         if args.useqlora==False and args.uselora==False:
             print(args.uselora, args.useqlora)
-            model = load_model(args.checkpoint)
+            model = load_model(args.checkpoint, args)
             model.origin_model = model.get_codet5p()
             model.get_trainable_parameters()
         
