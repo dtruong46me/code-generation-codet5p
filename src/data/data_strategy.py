@@ -71,7 +71,7 @@ class DataTokenizingStrategy(DataStrategy):
             return data
 
         except Exception as e:
-            print("Error while preprocessing data")
+            print(f"Error while preprocessing data: {e}")
             raise e
         
 # if __name__=='__main__':

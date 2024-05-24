@@ -46,8 +46,6 @@ def training_pipeline(args: argparse.Namespace):
             print("=================")
             return None
 
-        print(model.origin_model)
-
         print("Complete loading model!")
 
         # Load dataset from datapath
@@ -78,8 +76,8 @@ def training_pipeline(args: argparse.Namespace):
         print("Complete pushing model to hub!")
 
     except Exception as e:
-        print("Error while training: {e}")
-        raise
+        print(f"Error while training: {e}")
+        raise e
 
 # if __name__=='__main__':
 #     checkpoint = "Salesforce/codet5-base"

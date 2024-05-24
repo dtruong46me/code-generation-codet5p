@@ -16,7 +16,7 @@ checkpoint = "Salesforce/codet5-base"
 tokenizer = AutoTokenizer.from_pretrained(checkpoint)
 
 class DataCleaning:
-    def __init__(self, data: Dataset, strategy: DataStrategy):
+    def __init__(self, data: Dataset, strategy: DataStrategy, *args):
         self.data = data
         self.strategy = strategy
 
