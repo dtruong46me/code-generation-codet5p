@@ -28,11 +28,11 @@ class DataCleaning:
             logger.error(f"Error in handling data: {e}")
             raise e
         
-def clean_data(data: Dataset, *args):
+def clean_data(data: Dataset, max_input_length, max_target_length, *args):
     try:
         tokenizing_strtg = DataTokenizingStrategy()
         data_cleanng_ = DataCleaning(data, tokenizing_strtg)
-        tokenized_data = data_cleanng_.handle_data(tokenizer)
+        tokenized_data = data_cleanng_.handle_data(tokenizer, max_input_length, max_target_length)
 
         split_strtg = DataDivideStrategy()
         data_cleaning_ = DataCleaning(tokenized_data, split_strtg)

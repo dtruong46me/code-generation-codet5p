@@ -1,10 +1,7 @@
-import logging
 from abc import ABC, abstractclassmethod
 from datasets import DatasetDict, Dataset
 from transformers import AutoTokenizer
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 class DataStrategy(ABC):
     """
@@ -28,7 +25,7 @@ class DataDivideStrategy(DataStrategy):
             test_data = test_valid_data["train"]
             valid_data = test_valid_data["test"]
             
-            logger.info("Complete spliting dataset!")
+            print("Complete spliting dataset!")
             return DatasetDict({
                 "train": train_data,
                 "test": test_data,
@@ -36,16 +33,13 @@ class DataDivideStrategy(DataStrategy):
             })
 
         except Exception as e:
-            logger.error(f"Error in dividing data: {e}")
+            print(f"Error in dividing data: {e}")
             raise e
 
 class DataTokenizingStrategy(DataStrategy):
-    def handle_data(self, data: Dataset, tokenizer) -> Dataset:
+    def handle_data(self, data: Dataset, tokenizer, max_input_length, max_target_length) -> Dataset:
         try:
             tokenizer.pad_token = tokenizer.eos_token
-            max_input_length = 256
-            max_target_length = 1024
-
 
             tokenized_inputs = tokenizer(
                 data["text"],
@@ -72,12 +66,12 @@ class DataTokenizingStrategy(DataStrategy):
                           "labels": labels
             })
 
-            logger.info("Complete tokenizing dataset")
+            print(f"Complete tokenizing dataset with max_input_length={max_input_length}, max_target_length={max_target_length}!")
             
             return data
 
         except Exception as e:
-            logger.error("Error while preprocessing data")
+            print("Error while preprocessing data")
             raise e
         
 # if __name__=='__main__':

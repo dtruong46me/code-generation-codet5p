@@ -116,6 +116,9 @@ def parse_args() -> argparse.Namespace:
     
     parser.add_argument("--torch_type", type=torch.dtype, default=torch.float32)
     
+    parser.add_argument("--max_input_length", type=int, default=256)
+    parser.add_argument("--max_target_length", type=int, default=512)
+
     args = parser.parse_args()
     return args
 
