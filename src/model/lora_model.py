@@ -14,7 +14,7 @@ from codet5p import FineTunedCodet5Model
 
 class LoraCodet5p(FineTunedCodet5Model):
     def __init__(self, checkpoint: str, args: argparse.Namespace):
-        super().__init__(checkpoint)
+        super().__init__(checkpoint, args)
 
         self.lora_config = LoraConfig(
             r=args.lora_rank,
@@ -45,5 +45,5 @@ def load_lora_model(checkpoint: str, args: argparse.Namespace):
         return LoraCodet5p(checkpoint, args)
 
     except Exception as e:
-        print(f"Error while loading QLoRA model: {e}")
+        print(f"Error while loading LoRA model: {e}")
         raise e

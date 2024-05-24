@@ -14,7 +14,7 @@ from lora_model import LoraCodet5p
 
 class QLoraCodet5p(LoraCodet5p):
     def __init__(self, checkpoint: str, args: argparse.Namespace):
-        super().__init__(checkpoint)
+        super().__init__(checkpoint, args)
         self.bnb_config = BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_use_double_quant=True,
