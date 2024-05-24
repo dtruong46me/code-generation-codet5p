@@ -25,7 +25,6 @@ class LoraCodet5p(FineTunedCodet5Model):
             task_type=TaskType.SEQ_2_SEQ_LM
         )
         self.lora_model = None
-        self.generation_config = GenerationConfig(max_new_tokens=200, temperature=0.7, top_p=0.7)
     
     def get_lora_model(self, **kwargs):
         print(f"Get LoRA model")

@@ -1,22 +1,29 @@
-import logging
-from transformers import AutoTokenizer, T5ForConditionalGeneration, BitsAndBytesConfig, GenerationConfig
+import argparse
+from transformers import AutoTokenizer, T5ForConditionalGeneration, AutoModelForSeq2SeqLM, BitsAndBytesConfig, GenerationConfig
 import torch
 
 class FineTunedCodet5Model:
-    def __init__(self, checkpoint):
+    def __init__(self, checkpoint, args: argparse.Namespace):
         self.checkpoint = checkpoint
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.tokenizer = AutoTokenizer.from_pretrained(checkpoint)
         self.origin_model = None
+        self.args = args
+
+        self.generation_config = GenerationConfig(max_new_tokens=512, do_sample=True, temperature=1.0, top_k=20, top_p=0.9)
     
     def get_codet5p(self):
+        if self.checkpoint=="Salesforce/codet5p-2b" or self.checkpoint=="Salesforce/codet5p-6b":
+            return AutoModelForSeq2SeqLM.from_pretrained(self.checkpoint,
+                                                         torch_dtype=torch.bfloat16,
+                                                         trust_remote_code=True).to(self.device)
         return T5ForConditionalGeneration.from_pretrained(self.checkpoint).to(self.device)
 
     def generate(self, input_text, **kwargs):
         try:
             print(f"Generating output for input: {input_text}")
             input_ids = self.tokenizer.encode(input_text, return_tensors="pt").to(self.device)
-            outputs = self.origin_model.generate(input_ids, do_sample=True, **kwargs)
+            outputs = self.origin_model.generate(input_ids, **kwargs)
             generated_text = self.tokenizer.decode([token for token in outputs[0] if token != -100], skip_special_tokens=True)
             return generated_text
 
