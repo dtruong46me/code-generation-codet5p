@@ -3,6 +3,7 @@ import os
 from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, TrainerCallback, TrainingArguments, TrainerState, TrainerControl
 import argparse
 import torch
+import numpy as np
 
 
 def load_training_arguments(args):
@@ -103,8 +104,26 @@ def parse_args() -> argparse.Namespace:
     args = parser.parse_args()
     return args
 
-# if __name__=='__main__':
-#     args = parse_args()
-#     print(args)
-#     print(type(args))
-#     print(args.num_train_epochs)
+def get_model_size(model):
+    model_parameters = filter(lambda p: p.requires_grad, model.parameters())
+    model_size = sum([np.prod(p.size()) for p in model_parameters])
+    return "{}M".format(round(model_size / 1e+6))
+
+def freeze_decoder_except_xattn_codegen(model):
+    print(f"Params before freezing: {model.num_parameters()} || Trainable parameters: {get_model_size(model)}")
+
+    for param in model.decoder.parameters():
+        param.requires_grad = False
+
+    num_decoder_layers = model.decode.config.n_layer
+    for i in range(num_decoder_layers):
+        each_decoder_layer = model.decoder.transformer.h[i]
+        if hasattr(each_decoder_layer, "crossattention"):
+            for param in each_decoder_layer.crossattention.parameters():
+                param.requires_grad = True
+            each_decoder_layer.crossattention.to(torch.float32)
+        
+        if hasattr(each_decoder_layer, "alpha_xattn"):
+            each_decoder_layer.alpha_xattn.requires_grad = True
+    print(f"Params before freezing: {model.num_parameters()} || Trainable parameters: {get_model_size(model)}")
+    

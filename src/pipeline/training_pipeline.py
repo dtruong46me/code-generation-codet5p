@@ -40,6 +40,9 @@ def training_pipeline(args: argparse.Namespace):
         model.get_trainable_parameters()
         print("[+] Complete loading model!")
 
+        freeze_decoder_except_xattn_codegen(model.origin_model)
+        print("[+] Freeze decoder parameters except cross attention!")
+
         # Load dataset from datapath
         data = ingest_data(args.datapath)
         print("[+] Complete loading dataset!")
