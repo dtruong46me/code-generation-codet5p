@@ -87,10 +87,12 @@ def parse_args() -> argparse.Namespace:
 
     parser.add_argument("--lora", action="store_true")
     parser.add_argument("--quantization", action="store_true")
+    parser.add_argument("--ia3", action="store_true")
 
     parser.add_argument("--lora_rank", type=int, default=16)
     parser.add_argument("--lora_alpha", type=int, default=32)
     parser.add_argument("--target_modules", type=str, default="q,k")
+    parser.add_argument("--feedforward_modules", type=str, default="wi,wo")
     parser.add_argument("--lora_dropout", type=float, default=0.05)
 
     parser.add_argument("--temperature", type=float, default=1.0)

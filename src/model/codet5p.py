@@ -42,9 +42,4 @@ class FineTunedCodet5Model:
 
 # Load model    
 def load_model(checkpoint, args):
-    try:
-        return FineTunedCodet5Model(checkpoint, args)
-    
-    except Exception as e:
-        print(f"Error while loading model: {e}")
-        raise e
+    return FineTunedCodet5Model(checkpoint, args)
