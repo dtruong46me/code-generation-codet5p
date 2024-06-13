@@ -39,6 +39,10 @@ def training_pipeline(args: argparse.Namespace):
 
         model.get_trainable_parameters()
         print("[+] Complete loading model!")
+        print(model.origin_model.config)
+        print(model.origin_model.base_model)
+        print(model.origin_model.decoder)
+        print(model.origin_model.decoder.config)
 
         # freeze_decoder_except_xattn_codegen(model.origin_model)
         # print("[+] Freeze decoder parameters except cross attention!")
