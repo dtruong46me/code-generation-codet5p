@@ -115,7 +115,7 @@ def freeze_decoder_except_xattn_codegen(model):
     for param in model.decoder.parameters():
         param.requires_grad = False
 
-    num_decoder_layers = model.decode.config.n_layer
+    num_decoder_layers = model.decoder.config.n_layer
     for i in range(num_decoder_layers):
         each_decoder_layer = model.decoder.transformer.h[i]
         if hasattr(each_decoder_layer, "crossattention"):
