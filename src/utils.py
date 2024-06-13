@@ -115,18 +115,17 @@ def freeze_decoder_except_xattn_codegen(model):
     for param in model.decoder.parameters():
         param.requires_grad = False
 
-    print(model.decoder, end="\n\n")
-    print(model.decoder.config)
-
     num_decoder_layers = model.decoder.config.num_layers
     for i in range(num_decoder_layers):
-        each_decoder_layer = model.decoder.transformer.h[i]
-        if hasattr(each_decoder_layer, "crossattention"):
-            for param in each_decoder_layer.crossattention.parameters():
+        each_decoder_layer = model.decoder.block[i]
+        if hasattr(each_decoder_layer, "layer"):
+            cross_attention_layer = each_decoder_layer.layer[1]  # The second layer is typically the cross-attention layer
+            for param in cross_attention_layer.parameters():
                 param.requires_grad = True
-            each_decoder_layer.crossattention.to(torch.float32)
+            cross_attention_layer.to(torch.float32)
         
         if hasattr(each_decoder_layer, "alpha_xattn"):
             each_decoder_layer.alpha_xattn.requires_grad = True
+            
     print(f"Params before freezing: {model.num_parameters()} || Trainable parameters: {get_model_size(model)}")
     
