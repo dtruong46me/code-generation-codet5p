@@ -1,7 +1,6 @@
 #!/bin/bash
 
-echo "[+] Setup environment"
-echo "=========================="
+echo "[+] Installing packages..."
 start_time=$(date +%s)
 
 pip install -q -U datasets
@@ -17,8 +16,8 @@ if [[ -f "/kaggle/working/code-generation-codet5p/requirements.txt" ]]; then
     pip install -q -r /kaggle/working/code-generation-codet5p/requirements.txt
 fi
 
-echo "=========================="
-echo "[+] Finish setup environment"
+echo ""
+echo "[+] Finish installing packages"
 
 end_time=$(date +%s)
 setup_time=$((end_time - start_time))
@@ -26,4 +25,4 @@ setup_time=$((end_time - start_time))
 mins=$((setup_time / 60))
 secs=$((setup_time % 60))
 
-echo "Time taken for setup: $mins mins $secs secs."
+echo ": $mins mins $secs secs."

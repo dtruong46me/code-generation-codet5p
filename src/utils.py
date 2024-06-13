@@ -70,7 +70,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--per_device_eval_batch_size", type=int, default=2)
     parser.add_argument("--gradient_accumulation_steps", type=int, default=1)
 
-    parser.add_argument("--learning_rate", type=int, default=0.00005)
+    parser.add_argument("--learning_rate", type=float, default=0.00005)
     parser.add_argument("--weight_decay", type=float, default=0.0)
 
     parser.add_argument("--evaluation_strategy", type=str, default="no")
