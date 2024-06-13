@@ -25,4 +25,4 @@ setup_time=$((end_time - start_time))
 mins=$((setup_time / 60))
 secs=$((setup_time % 60))
 
-echo ": $mins mins $secs secs."
+echo "Execution time: $mins mins $secs secs."
