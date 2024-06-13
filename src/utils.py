@@ -115,6 +115,9 @@ def freeze_decoder_except_xattn_codegen(model):
     for param in model.decoder.parameters():
         param.requires_grad = False
 
+    print(model.decoder, end="\n\n")
+    print(model.decoder.config)
+
     num_decoder_layers = model.decoder.config.num_layers
     for i in range(num_decoder_layers):
         each_decoder_layer = model.decoder.transformer.h[i]
