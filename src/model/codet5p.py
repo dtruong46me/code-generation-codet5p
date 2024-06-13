@@ -1,22 +1,32 @@
-import logging
-from transformers import AutoTokenizer, T5ForConditionalGeneration, BitsAndBytesConfig, GenerationConfig
+import argparse
+from transformers import AutoTokenizer, T5ForConditionalGeneration, AutoModelForSeq2SeqLM, BitsAndBytesConfig, GenerationConfig
 import torch
 
 class FineTunedCodet5Model:
-    def __init__(self, checkpoint):
+    def __init__(self, checkpoint, args: argparse.Namespace):
         self.checkpoint = checkpoint
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.tokenizer = AutoTokenizer.from_pretrained(checkpoint)
         self.origin_model = None
+        self.args = args
+
+        self.generation_config = GenerationConfig(max_new_tokens=args.max_new_tokens, 
+                                                  do_sample=True, 
+                                                  temperature=args.temperature, 
+                                                  top_k=args.top_k, top_p=args.top_p)
     
     def get_codet5p(self):
+        if self.checkpoint=="Salesforce/codet5p-2b" or self.checkpoint=="Salesforce/codet5p-6b":
+            return AutoModelForSeq2SeqLM.from_pretrained(self.checkpoint,
+                                                         torch_dtype=torch.bfloat16,
+                                                         trust_remote_code=True).to(self.device)
         return T5ForConditionalGeneration.from_pretrained(self.checkpoint).to(self.device)
 
     def generate(self, input_text, **kwargs):
         try:
             print(f"Generating output for input: {input_text}")
             input_ids = self.tokenizer.encode(input_text, return_tensors="pt").to(self.device)
-            outputs = self.origin_model.generate(input_ids, do_sample=True, **kwargs)
+            outputs = self.origin_model.generate(input_ids, self.generation_config, **kwargs)
             generated_text = self.tokenizer.decode([token for token in outputs[0] if token != -100], skip_special_tokens=True)
             return generated_text
 
@@ -31,9 +41,9 @@ class FineTunedCodet5Model:
   
 
 # Load model    
-def load_model(checkpoint):
+def load_model(checkpoint, args):
     try:
-        return FineTunedCodet5Model(checkpoint)
+        return FineTunedCodet5Model(checkpoint, args)
     
     except Exception as e:
         print(f"Error while loading model: {e}")

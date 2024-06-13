@@ -10,39 +10,25 @@ from peft import LoraConfig, PeftConfig, PeftModel, TaskType, get_peft_model, pr
 
 path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 sys.path.insert(0, path)
-from codet5p import FineTunedCodet5Model
+from lora_model import LoraCodet5p
 
-class QLoraCodet5p(FineTunedCodet5Model):
+class QLoraCodet5p(LoraCodet5p):
     def __init__(self, checkpoint: str, args: argparse.Namespace):
-        super().__init__(checkpoint)
+        super().__init__(checkpoint, args)
         self.bnb_config = BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_use_double_quant=True,
             bnb_4bit_quant_type="nf4",
             bnb_4bit_compute_dtype=torch.bfloat16
         )
-        self.qlora_model = None
-        self.lora_config = LoraConfig(
-            r=args.lora_rank,
-            lora_alpha=args.lora_alpha,
-            target_modules=args.target_modules.split(","),
-            lora_dropout=args.lora_dropout,
-            bias="none",
-            task_type=TaskType.SEQ_2_SEQ_LM
-        )
-        self.generation_config = GenerationConfig(max_new_tokens=200, temperature=0.7, top_p=0.7)
 
     def get_qlora_model(self, **kwargs):
         print(f"Get QLoRA model")
         return T5ForConditionalGeneration.from_pretrained(self.checkpoint, quantization_config=self.bnb_config, **kwargs)
     
-    def get_peft(self, model, config):
-        print(f"Get PEFT model")
-        return get_peft_model(model, config)
-    
     def get_trainable_parameters(self) -> None:
         print("=================")
-        self.qlora_model.print_trainable_parameters()
+        self.origin_model.print_trainable_parameters()
         print("=================")
 
   

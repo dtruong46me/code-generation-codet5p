@@ -14,7 +14,7 @@ from codet5p import FineTunedCodet5Model
 
 class LoraCodet5p(FineTunedCodet5Model):
     def __init__(self, checkpoint: str, args: argparse.Namespace):
-        super().__init__(checkpoint)
+        super().__init__(checkpoint, args)
 
         self.lora_config = LoraConfig(
             r=args.lora_rank,
@@ -24,8 +24,6 @@ class LoraCodet5p(FineTunedCodet5Model):
             bias="none",
             task_type=TaskType.SEQ_2_SEQ_LM
         )
-        self.lora_model = None
-        self.generation_config = GenerationConfig(max_new_tokens=200, temperature=0.7, top_p=0.7)
     
     def get_lora_model(self, **kwargs):
         print(f"Get LoRA model")
@@ -37,7 +35,7 @@ class LoraCodet5p(FineTunedCodet5Model):
     
     def get_trainable_parameters(self) -> None:
         print("=================")
-        self.lora_model.print_trainable_parameters()
+        self.origin_model.print_trainable_parameters()
         print("=================")
 
 
@@ -47,5 +45,5 @@ def load_lora_model(checkpoint: str, args: argparse.Namespace):
         return LoraCodet5p(checkpoint, args)
 
     except Exception as e:
-        print(f"Error while loading QLoRA model: {e}")
+        print(f"Error while loading LoRA model: {e}")
         raise e

@@ -1,10 +1,7 @@
-import logging
 from abc import ABC, abstractclassmethod
 from datasets import DatasetDict, Dataset
 from transformers import AutoTokenizer
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 class DataStrategy(ABC):
     """
@@ -28,7 +25,7 @@ class DataDivideStrategy(DataStrategy):
             test_data = test_valid_data["train"]
             valid_data = test_valid_data["test"]
             
-            logger.info("Complete spliting dataset!")
+            print("Complete spliting dataset!")
             return DatasetDict({
                 "train": train_data,
                 "test": test_data,
@@ -36,16 +33,15 @@ class DataDivideStrategy(DataStrategy):
             })
 
         except Exception as e:
-            logger.error(f"Error in dividing data: {e}")
+            print(f"Error in dividing data: {e}")
             raise e
 
 class DataTokenizingStrategy(DataStrategy):
     def handle_data(self, data: Dataset, tokenizer) -> Dataset:
         try:
             tokenizer.pad_token = tokenizer.eos_token
-            max_input_length = 600
-            max_target_length = 320
-
+            max_input_length = 128
+            max_target_length = 512
 
             tokenized_inputs = tokenizer(
                 data["text"],
@@ -68,16 +64,16 @@ class DataTokenizingStrategy(DataStrategy):
 
             data = Dataset.from_dict({
                           "input_ids": tokenized_inputs.input_ids,
-                          "attention_mask": tokenized_inputs.attention_mask,
+                        #   "attention_mask": tokenized_inputs.attention_mask,
                           "labels": labels
             })
 
-            logger.info("Complete tokenizing dataset")
+            print(f"Complete tokenizing dataset with max_input_length={max_input_length}, max_target_length={max_target_length}!")
             
             return data
 
         except Exception as e:
-            logger.error("Error while preprocessing data")
+            print(f"Error while preprocessing data: {e}")
             raise e
         
 # if __name__=='__main__':

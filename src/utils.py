@@ -3,7 +3,7 @@ import os
 from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, TrainerCallback, TrainingArguments, TrainerState, TrainerControl
 import argparse
 import logging
-import wandb
+import torch
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -67,7 +67,7 @@ def load_tokens(token_path):
             return tokens
     else:
         return
-    
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Fine tuning CodeT5 Model")
     parser.add_argument("--configpath", type=str, default=None, help="Path to the config.yaml")
@@ -101,13 +101,22 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--report_to", type=str, default="wandb")
     parser.add_argument("--run_name", type=str, default="codet5p-220m-running")
 
-    parser.add_argument("--uselora", type=bool, default=False)
-    parser.add_argument("--useqlora", type=bool, default=False)
+    parser.add_argument("--uselora", action="store_true", default=False)
+    parser.add_argument("--useqlora", action="store_true", default=False)
 
     parser.add_argument("--lora_rank", type=int, default=16)
     parser.add_argument("--lora_alpha", type=int, default=32)
     parser.add_argument("--target_modules", type=str, default="q,k")
     parser.add_argument("--lora_dropout", type=float, default=0.05)
+
+    parser.add_argument("--temperature", type=float, default=1.0)
+    parser.add_argument("--top_k", type=int, default=50)
+    parser.add_argument("--top_p", type=float, default=1.0)
+    parser.add_argument("--max_new_tokens", type=int, default=256)
+    
+    parser.add_argument("--max_input_length", type=int, default=256)
+    parser.add_argument("--max_target_length", type=int, default=512)
+
     args = parser.parse_args()
     return args
 
