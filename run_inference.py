@@ -30,12 +30,9 @@ def inference(model, tokenizer, input_text: str, generation_config):
     return output_text
 
 
-def main():
-    checkpoint = "dtruong46me/codet5p-770m-2"
-    tokenizer = AutoTokenizer.from_pretrained(checkpoint)
-    model = T5ForConditionalGeneration.from_pretrained(checkpoint)
-
+if __name__=="__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("--checkpoint", type=str, default="dtruong46me/codet5p-770m-2")
     parser.add_argument("--input_text", type=str, default="Print Hello World")
     parser.add_argument("--temperature", type=float, default=0.9)
     parser.add_argument("--top_k", type=int, default=40)
@@ -44,6 +41,9 @@ def main():
     parser.add_argument("--min_new_tokens", type=int, default=8)
 
     args = parser.parse_args()
+
+    tokenizer = AutoTokenizer.from_pretrained(args.checkpoint)
+    model = T5ForConditionalGeneration.from_pretrained(args.checkpoint)
 
     generation_config = GenerationConfig(
         temperature=args.temperature,
@@ -55,6 +55,3 @@ def main():
 
     response = inference(model, tokenizer, args.input_text, generation_config)
     print("\n[+] Response:", response)
-
-if __name__=="__main__":
-    main()
