@@ -21,10 +21,12 @@ def inference(model, tokenizer, input_text: str, generation_config):
 ### Instruction: {input_text}
 ### Response:"""
     
+    print("\n[+] Input:\n", input_text)
     model.to(device)
     input_ids = tokenizer(prompt, return_tensors="pt").to(device)
     output_ids = model.generate(input_ids, do_sample=True, generation_config=generation_config)
     output_text = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+    print("\n[+] Output:\n", output_text)
     return output_text
 
 
@@ -52,7 +54,7 @@ def main():
     )
 
     response = inference(model, tokenizer, args.input_text, generation_config)
-    print(response)
+    print("\n[+] Response:", response)
 
 if __name__=="__main__":
     main()
