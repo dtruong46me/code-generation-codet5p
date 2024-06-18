@@ -25,9 +25,9 @@ class LoraCodet5p(FineTunedCodet5Model):
             task_type=TaskType.SEQ_2_SEQ_LM
         )
     
-    def get_lora_model(self, **kwargs):
+    def get_lora_model(self):
         print(f"Get LoRA model")
-        return T5ForConditionalGeneration.from_pretrained(self.checkpoint, **kwargs)
+        return T5ForConditionalGeneration.from_pretrained(self.checkpoint).to(self.device)
     
     def get_peft(self, model, config):
         print(f"Get PEFT model")
