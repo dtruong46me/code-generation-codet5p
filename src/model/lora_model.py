@@ -41,9 +41,4 @@ class LoraCodet5p(FineTunedCodet5Model):
 
 # Load Lora model
 def load_lora_model(checkpoint: str, args: argparse.Namespace):
-    try:
-        return LoraCodet5p(checkpoint, args)
-
-    except Exception as e:
-        print(f"Error while loading LoRA model: {e}")
-        raise e
+    return LoraCodet5p(checkpoint, args)

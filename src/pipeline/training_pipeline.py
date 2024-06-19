@@ -9,6 +9,7 @@ from utils import *
 from model.codet5p import load_model
 from model.qlora_model import load_qlora_model
 from model.lora_model import load_lora_model
+from model.ia3_model import load_ia3_model
 from data.data_cleaning import clean_data
 from data.load_data import ingest_data
 
@@ -23,22 +24,30 @@ def training_pipeline(args: argparse.Namespace):
         if args.lora==False:
             model = load_model(args.checkpoint, args)
             model.origin_model = model.get_codet5p()
-            model.get_trainable_parameters()
         
+
         if args.lora==True:
             if args.quantization==False:
                 model = load_lora_model(args.checkpoint, args)
                 model.origin_model = model.get_lora_model()
                 model.origin_model = model.get_peft(model.origin_model, model.lora_config)
-                model.get_trainable_parameters()
-            
+                
             if args.quantization==True:
                 model = load_qlora_model(args.checkpoint, args)
                 model.origin_model = model.get_qlora_model()
                 model.origin_model = model.get_peft(model.origin_model, model.lora_config)
-                model.get_trainable_parameters()
 
+        # Load IA3 Model
+        if args.ia3==True and args.lora==False:
+            model = load_ia3_model(args.checkpoint, args)
+            model.origin_model = model.get_ia3_model()
+            model.origin_model = model.get_peft(model.origin_model, model.ia3_config)
+
+        model.get_trainable_parameters()
         print("[+] Complete loading model!")
+
+        freeze_decoder_except_xattn_codegen(model.origin_model)
+        print("[+] Freeze decoder parameters except cross attention!")
 
         # Load dataset from datapath
         data = ingest_data(args.datapath)

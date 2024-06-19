@@ -22,11 +22,11 @@ class FineTunedCodet5Model:
                                                          trust_remote_code=True).to(self.device)
         return T5ForConditionalGeneration.from_pretrained(self.checkpoint).to(self.device)
 
-    def generate(self, input_text, **kwargs):
+    def generate(self, input_text):
         try:
-            print(f"Generating output for input: {input_text}")
+            print(f"Generating from query: ### {input_text}")
             input_ids = self.tokenizer.encode(input_text, return_tensors="pt").to(self.device)
-            outputs = self.origin_model.generate(input_ids, self.generation_config, **kwargs)
+            outputs = self.origin_model.generate(input_ids, self.generation_config, do_sample=True)
             generated_text = self.tokenizer.decode([token for token in outputs[0] if token != -100], skip_special_tokens=True)
             return generated_text
 
@@ -42,30 +42,4 @@ class FineTunedCodet5Model:
 
 # Load model    
 def load_model(checkpoint, args):
-    try:
-        return FineTunedCodet5Model(checkpoint, args)
-    
-    except Exception as e:
-        print(f"Error while loading model: {e}")
-        raise e
-
-# if __name__=='__main__':
-#     checkpoint = "Salesforce/codet5p-770m"
-#     model = QLoraCodet5p(checkpoint)
-#     model.qlora_model = model.get_qlora_model()
-
-#     trainable_params = model.get_trainable_parameters()
-#     print("Trainable Parameters: ", trainable_params)
-    
-
-#     model = load_model(checkpoint)
-
-#     # prompt = "def print_hello_world():"
-#     # prompt = "Write a function to get a lucid number smaller than or equal to n."
-#     prompt = "Only Write a function to reverse words in a given string."
-
-#     output = model.generate(prompt)
-#     print()
-#     print(output)
-#     print()
-#     print(type(model))
+    return FineTunedCodet5Model(checkpoint, args)

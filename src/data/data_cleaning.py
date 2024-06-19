@@ -42,11 +42,3 @@ def clean_data(data: Dataset, *args):
     except Exception as e:
         logger.error(f"Error while handling data: {e}")
         raise e
-    
-# if __name__=='__main__':
-#     checkpoint = "Salesforce/codet5-base"
-#     datapath = "mbpp"
-
-#     data = ingest_data(datapath)
-#     data = clean_data(data)
-#     print(data)
