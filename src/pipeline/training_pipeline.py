@@ -22,18 +22,17 @@ def training_pipeline(args: argparse.Namespace):
 
         # Load model from checkpoint
         if args.lora==False:
-            print(f"[+] lora={args.lora}, quantization={args.quantization}")
             model = load_model(args.checkpoint, args)
             model.origin_model = model.get_codet5p()
         
-        # Load Lora Model:
+
         if args.lora==True:
             if args.quantization==False:
                 model = load_lora_model(args.checkpoint, args)
                 model.origin_model = model.get_lora_model()
                 model.origin_model = model.get_peft(model.origin_model, model.lora_config)
-            
-            else:
+                
+            if args.quantization==True:
                 model = load_qlora_model(args.checkpoint, args)
                 model.origin_model = model.get_qlora_model()
                 model.origin_model = model.get_peft(model.origin_model, model.lora_config)

@@ -1,11 +1,15 @@
 import yaml
 import os
-from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, TrainerCallback, TrainingArguments, TrainerState, TrainerControl
+from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, Trainer
 import argparse
+
+import torch.nn.functional as F
+
 import torch
 import numpy as np
 
 
+# Load Training Arguments
 def load_training_arguments(args):
     training_args = Seq2SeqTrainingArguments(
         output_dir=args.output_dir,
@@ -34,6 +38,49 @@ def load_training_arguments(args):
     )
     return training_args
 
+class CustomTrainer(Trainer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def compute_loss(self, model, inputs, return_outputs=False):
+        # Forward pass
+        outputs = model(**inputs)
+        logits = outputs.logits
+
+        # Text2Code and Code2Text generation losses
+        labels = inputs.get("labels")
+        lt2c = self.label_smoother(logits, labels)
+        lc2t = self.label_smoother(logits.transpose(1,2), labels.transpose(1,2))
+
+        # Text-Code contrastive loss
+        cls_embeddings = outputs.encoder_last_hidden_state[:,0,:]
+        text_embeddings, code_embeddings = cls_embeddings.chunk(2, dim=0)
+        text_embeddings = F.normalize(text_embeddings, p=2, dim=-1)
+        code_embeddings = F.normalize(code_embeddings, p=2, dim=-1)
+
+        batch_size = text_embeddings.size(0)
+        temperature = self.model.temperature
+
+        # Text-to-code similarities
+        st2c = torch.matmul(text_embeddings, code_embeddings.transpose(0, 1))
+        pt2c = F.softmax(st2c / temperature, dim=1)
+        yt2c = torch.eye(batch_size).to(st2c.device)
+        lt2c_contrastive = F.cross_entropy(st2c / temperature, yt2c.argmax(dim=1))
+
+        # Code-to-text similarities
+        sc2t = torch.matmul(code_embeddings, text_embeddings.transpose(0, 1))
+        pc2t = F.softmax(sc2t / temperature, dim=1)
+        yc2t = torch.eye(batch_size).to(sc2t.device)
+        lc2t_contrastive = F.cross_entropy(sc2t / temperature, yc2t.argmax(dim=1))
+
+        # Total loss
+        loss = lt2c + lc2t + 0.5 * (lt2c_contrastive + lc2t_contrastive)
+
+        if return_outputs:
+            return loss, outputs
+        else:
+            return loss
+
 
 def load_trainer(model, training_args, dataset, tokenizer):
     trainer = Seq2SeqTrainer(
@@ -45,7 +92,6 @@ def load_trainer(model, training_args, dataset, tokenizer):
         # callbacks=callbacks
     )
     return trainer
-
 
 def load_tokens(token_path):
     if os.path.exists(token_path):
@@ -89,6 +135,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--quantization", action="store_true")
     parser.add_argument("--ia3", action="store_true")
 
+
     parser.add_argument("--lora_rank", type=int, default=16)
     parser.add_argument("--lora_alpha", type=int, default=32)
     parser.add_argument("--target_modules", type=str, default="q,k")
@@ -98,6 +145,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--temperature", type=float, default=1.0)
     parser.add_argument("--top_k", type=int, default=50)
     parser.add_argument("--top_p", type=float, default=1.0)
+    parser.add_argument("--min_new_tokens", type=int, default=1)
     parser.add_argument("--max_new_tokens", type=int, default=256)
     
     parser.add_argument("--max_input_length", type=int, default=256)
