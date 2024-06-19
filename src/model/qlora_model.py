@@ -22,9 +22,10 @@ class QLoraCodet5p(LoraCodet5p):
             bnb_4bit_compute_dtype=torch.bfloat16
         )
 
-    def get_qlora_model(self, **kwargs):
+    def get_qlora_model(self):
         print(f"Get QLoRA model")
-        return T5ForConditionalGeneration.from_pretrained(self.checkpoint, quantization_config=self.bnb_config, **kwargs)
+        model = T5ForConditionalGeneration.from_pretrained(self.checkpoint, quantization_config=self.bnb_config).to(self.device)
+        return prepare_model_for_kbit_training(model, self.bnb_config)
     
     def get_trainable_parameters(self) -> None:
         print("=================")
