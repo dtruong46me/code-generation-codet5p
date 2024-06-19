@@ -9,6 +9,7 @@ from utils import *
 from model.codet5p import load_model
 from model.qlora_model import load_qlora_model
 from model.lora_model import load_lora_model
+from model.ia3_model import load_ia3_model
 from data.data_cleaning import clean_data
 from data.load_data import ingest_data
 
@@ -20,69 +21,62 @@ def training_pipeline(args: argparse.Namespace):
         print("=========================================")
 
         # Load model from checkpoint
-        if args.useqlora==True and args.uselora==False:
-            print(args.uselora, args.useqlora)
-            model = load_qlora_model(args.checkpoint, args)
-            model.origin_model = model.get_qlora_model()
-            model.origin_model = model.get_peft(model.origin_model, model.lora_config)
-            model.get_trainable_parameters()
-
-        if args.uselora==True and args.useqlora==False:
-            print(args.uselora, args.useqlora)
-            model = load_lora_model(args.checkpoint, args)
-            model.origin_model = model.get_lora_model()
-            model.origin_model = model.get_peft(model.origin_model, model.lora_config)
-            model.get_trainable_parameters()
-            
-        if args.useqlora==False and args.uselora==False:
-            print(args.uselora, args.useqlora)
+        if args.lora==False:
+            print(f"[+] lora={args.lora}, quantization={args.quantization}")
             model = load_model(args.checkpoint, args)
             model.origin_model = model.get_codet5p()
-            model.get_trainable_parameters()
         
-        if args.uselora==True and args.useqlora==True:
-            print("=================")
-            print("Only one of QLoRA and LoRA can be used at a time!")
-            print("=================")
-            return None
+        # Load Lora Model:
+        if args.lora==True:
+            if args.quantization==False:
+                model = load_lora_model(args.checkpoint, args)
+                model.origin_model = model.get_lora_model()
+                model.origin_model = model.get_peft(model.origin_model, model.lora_config)
+            
+            else:
+                model = load_qlora_model(args.checkpoint, args)
+                model.origin_model = model.get_qlora_model()
+                model.origin_model = model.get_peft(model.origin_model, model.lora_config)
 
-        print("Complete loading model!")
+        # Load IA3 Model
+        if args.ia3==True and args.lora==False:
+            model = load_ia3_model(args.checkpoint, args)
+            model.origin_model = model.get_ia3_model()
+            model.origin_model = model.get_peft(model.origin_model, model.ia3_config)
+
+        model.get_trainable_parameters()
+        print("[+] Complete loading model!")
+
+        freeze_decoder_except_xattn_codegen(model.origin_model)
+        print("[+] Freeze decoder parameters except cross attention!")
 
         # Load dataset from datapath
         data = ingest_data(args.datapath)
-        print("Complete loading dataset!")
+        print("[+] Complete loading dataset!")
 
         # Clean dataset with strategy
         data = clean_data(data, model.tokenizer)
-        print("Complete cleaning dataset!")
+        print("[+] Complete cleaning dataset!")
 
         # Load training arguments
         training_args = load_training_arguments(args)
-        print("Complete loading training arguments!")
+        print("[+] Complete loading training arguments!")
 
         # Load trainer
         trainer = load_trainer(model=model.origin_model, 
                             training_args=training_args, 
                             dataset=data, 
                             tokenizer=model.tokenizer)
-        print("Complete loading trainer!")
+        print("[+] Complete loading trainer!")
 
         # Train model
         trainer.train()
-        print("Complete training!")
+        print("[+] Complete training!")
 
         # Push trainer to Huggingface Hub
         trainer.push_to_hub()
-        print("Complete pushing model to hub!")
+        print("[+] Complete pushing model to hub!")
 
     except Exception as e:
         print(f"Error while training: {e}")
         raise e
-
-# if __name__=='__main__':
-#     checkpoint = "Salesforce/codet5-base"
-#     datapath = "mbpp"
-#     configpath = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "config.yaml"))
-#     print(configpath)
-
-#     training_pipeline(checkpoint, datapath, configpath)
