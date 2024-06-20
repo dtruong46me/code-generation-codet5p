@@ -5,8 +5,8 @@ import sys
 
 import argparse
 
-from transformers import GenerationConfig, T5ForConditionalGeneration
-from peft import IA3Config, PeftConfig, PeftModel, TaskType, get_peft_model, prepare_model_for_kbit_training
+from transformers import T5ForConditionalGeneration
+from peft import IA3Config, get_peft_model, TaskType
 
 path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 sys.path.insert(0, path)
@@ -22,7 +22,7 @@ class IA3Model(FineTunedCodet5Model):
     
     def get_ia3_model(self):
         print(f"Get IA3 model")
-        return T5ForConditionalGeneration.from_pretrained(self.checkpoint)
+        return T5ForConditionalGeneration.from_pretrained(self.checkpoint).to(self.device)
     
     def get_peft(self, model, config):
         print(f"Get PEFT model")
