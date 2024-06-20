@@ -22,9 +22,14 @@ def training_pipeline(args: argparse.Namespace):
 
         # Load model from checkpoint
         if args.lora==False:
-            model = load_model(args.checkpoint, args)
-            model.origin_model = model.get_codet5p()
-        
+            if args.ia3==False:
+                model = load_model(args.checkpoint, args)
+                model.origin_model = model.get_codet5p()
+
+            if args.ia3==True:
+                model = load_ia3_model(args.checkpoint, args)
+                model.origin_model = model.get_ia3_model()
+                model.origin_model = model.get_peft(model.origin_model, model.ia3_config)
 
         if args.lora==True:
             if args.quantization==False:
@@ -36,12 +41,6 @@ def training_pipeline(args: argparse.Namespace):
                 model = load_qlora_model(args.checkpoint, args)
                 model.origin_model = model.get_qlora_model()
                 model.origin_model = model.get_peft(model.origin_model, model.lora_config)
-
-        # Load IA3 Model
-        if args.ia3==True and args.lora==False:
-            model = load_ia3_model(args.checkpoint, args)
-            model.origin_model = model.get_ia3_model()
-            model.origin_model = model.get_peft(model.origin_model, model.ia3_config)
 
         model.get_trainable_parameters()
         print("[+] Complete loading model!")
