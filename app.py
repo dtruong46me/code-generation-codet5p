@@ -1,41 +1,116 @@
 
 import streamlit as st
-from src.model.codet5p import load_model
+
+# Set page title name:
+st.set_page_config(page_title="Python Code Generation", page_icon=":robot_face:")
+
+import time
+import pandas as pd
+import torch
+
+
+from transformers import TextStreamer, GenerationConfig, AutoTokenizer, T5ForConditionalGeneration
+
+class StreamlitTextStreamer(TextStreamer):
+    def __init__(self, tokenizer, st_container, st_info_container, skip_prompt=False, **decode_kwargs):
+        super().__init__(tokenizer, skip_prompt, **decode_kwargs)
+        self.st_container = st_container
+        self.st_info_container = st_info_container
+        self.text = ""
+        self.start_time = None
+        self.first_token_time = None
+        self.total_tokens = 0
+
+    def on_finalized_text(self, text: str, stream_end: bool=False):
+        if self.start_time is None:
+            self.start_time = time.time()
+
+        if self.first_token_time is None and len(text.strip()) > 0:
+            self.first_token_time = time.time()
+
+        self.text += text
+
+        self.total_tokens += len(text.split())
+        self.st_container.markdown("```" + self.text)
+        time.sleep(0.03)
+
+        if stream_end:
+            total_time = time.time() - self.start_time
+            first_token_wait_time = self.first_token_time - self.start_time if self.first_token_time else None
+            tokens_per_second = self.total_tokens / total_time if total_time > 0 else None
+            
+            df = pd.DataFrame(data={
+                "First token": [first_token_wait_time],
+                "Total tokens": [self.total_tokens],
+                "Time taken": [total_time],
+                "Token per second": [tokens_per_second]
+            })
+
+            self.st_info_container.table(df.T)
+
+
+def generate_code(model, input_text, generation_config, tokenizer, st_container, st_info_container) -> str:
+    try:
+        prefix = "Generate Python code for the following instruction: \n###\n"
+        suffix = "\n### Code:"
+
+        input_ids = tokenizer.encode(prefix + input_text + suffix, return_tensors="pt")
+
+        # Initialize the Streamlit container and streamer
+        streamer = StreamlitTextStreamer(tokenizer, st_container, st_info_container, skip_special_tokens=True, decoder_start_token_id=3)
+
+        model.generate(input_ids, streamer=streamer, do_sample=True, generation_config=generation_config)
+
+    except Exception as e:
+        raise e
+
 
 st.title("Python Code Generation")
-st.caption("Project 2")
+st.caption("Project 2 - Thầy Tống Văn Vạn")
 
 st.write("---")
-user_input = st.text_input("Enter your input")
-
-model = None
-temperature = 0.0
-top_k = 1
-top_p = 0.0
+input_text = st.text_input("Enter your input")
 
 with st.sidebar:
-    st.header("Choose model:")
-    checkpoint = st.selectbox("Model", options=["", "Salesforce/codet5p-220m", "Salesforce/codet5p-770m", "cincin2399/codet5-fine-tuned"])
-
-    model = load_model(checkpoint)
-    model.origin_model = model.get_codet5p()
+    st.header("Model:")
+    checkpoint = st.selectbox("Model", options=["Choose model", "Salesforce/codet5p-220m-py", "Salesforce/codet5p-770m-py", "cincin2399/codet5-fine-tuned"])
 
     st.header("Generation Config")
-    temperature = st.slider("temperature", min_value=0.0, max_value=1.00, step=0.01, value=1.0)
-    top_k = st.slider("top_k", min_value=1, max_value=100, value=50)
-    top_p = st.slider("top_p", min_value=0.0, max_value=1.0, step=0.01, value=1.0)
-    max_new_tokens = st.slider("max_new_tokens", min_value=1, max_value=512, value=256)
-    min_new_tokens = st.slider("min_new_tokens", min_value=1, max_value=256, value=16)
+    temperature = st.number_input("temperature", min_value=0.0, max_value=1.00, step=0.05, value=0.9)
+    top_k = st.number_input("top_k", min_value=1, max_value=100, value=40)
+    top_p = st.number_input("top_p", min_value=0.0, max_value=1.0, step=0.05, value=0.9)
+    max_new_tokens = st.number_input("max_new_tokens", min_value=1, max_value=256, value=64)
+    min_new_tokens = st.number_input("min_new_tokens", min_value=1, max_value=64, value=4)
+
+generation_config = GenerationConfig(
+    min_new_tokens=min_new_tokens,
+    max_new_tokens=320,
+    temperature=temperature,
+    top_p=top_p,
+    top_k=top_k
+)
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+if checkpoint=="Choose model":
+    tokenizer = None
+    model = None
+
+if checkpoint!="Choose model":
+    tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+    model = T5ForConditionalGeneration.from_pretrained(checkpoint)
 
 if st.button("Submit"):
-    if model is None:
-        st.warning("Choose model before generate!")
+    st.write("---")
+    st.write("## Code")
+
+    if checkpoint=="Choose model":
+        st.error("Please selece a model!")
 
     else:
-        st.info("Generating input...")
-        generated_output = model.generate(user_input, temperature=temperature, top_k=top_k, top_p=top_p, min_new_tokens=min_new_tokens, max_new_tokens=max_new_tokens)
-        
-        st.write("---")
-        st.header("Generated output:")
-        st.text(generated_output)
-        st.write("---")
+        if input_text=="":
+            st.error("Please enter a dialogue!")
+
+        st_container = st.empty()
+        st_info_container = st.empty()
+        generate_code(model, " ".join(input_text.split()), generation_config, tokenizer, st_container, st_info_container)
