@@ -22,21 +22,25 @@ def training_pipeline(args: argparse.Namespace):
 
         # Load model from checkpoint
         if args.lora==False:
+            # Supervised full finetuning (SFT)
             if args.ia3==False:
                 model = load_model(args.checkpoint, args)
                 model.origin_model = model.get_codet5p()
-
+            
+            # Using IA3 to finetuning
             if args.ia3==True:
                 model = load_ia3_model(args.checkpoint, args)
                 model.origin_model = model.get_ia3_model()
                 model.origin_model = model.get_peft(model.origin_model, model.ia3_config)
 
         if args.lora==True:
+            # Using LoRA to finetuning
             if args.quantization==False:
                 model = load_lora_model(args.checkpoint, args)
                 model.origin_model = model.get_lora_model()
                 model.origin_model = model.get_peft(model.origin_model, model.lora_config)
                 
+            # Using QLoRA to finetuning
             if args.quantization==True:
                 model = load_qlora_model(args.checkpoint, args)
                 model.origin_model = model.get_qlora_model()
@@ -45,6 +49,7 @@ def training_pipeline(args: argparse.Namespace):
         model.get_trainable_parameters()
         print("[+] Complete loading model!")
 
+        # Freeze decoder parameters (exept cross attention)
         freeze_decoder_except_xattn_codegen(model.origin_model)
         print("[+] Freeze decoder parameters except cross attention!")
 
