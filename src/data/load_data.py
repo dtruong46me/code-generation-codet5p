@@ -1,6 +1,4 @@
-
 from datasets import load_dataset, Dataset, concatenate_datasets
-    
 
 def ingest_data(datapath:str="mbpp") -> Dataset:
     if "," not in datapath:
@@ -10,9 +8,9 @@ def ingest_data(datapath:str="mbpp") -> Dataset:
             return load_codealpaca()
         elif datapath == "conala":
             return load_conala()
+        
     if "," in datapath:
         datapaths = datapath.split(",")
-        print(datapaths)
         all_data = Dataset.from_dict({
             "text": [],
             "code": []
@@ -43,7 +41,9 @@ def load_mbpp() -> Dataset:
 
 
 def load_codealpaca() -> Dataset:
-    data = load_dataset("Abzu/CodeAlpacaPython", split="train")
+    train_data = load_dataset("Abzu/CodeAlpacaPython", split="train")
+    validation_data = load_dataset("Abzu/CodeAlpacaPython", split="validation")
+    data = concatenate_datasets([train_data, validation_data])
     d = {
         "text": [],
         "code": []
@@ -61,7 +61,10 @@ def load_codealpaca() -> Dataset:
 
 
 def load_conala() -> Dataset:
-    data1 = load_dataset("neulab/conala", split="train")
+    train_data1 = load_dataset("neulab/conala", split="train")
+    validation_data1 = load_dataset("neulab/conala", split="validation")
+    data1 = concatenate_datasets([train_data1, validation_data1])
+    
     d = {
         "text": [],
         "code": []
@@ -71,21 +74,22 @@ def load_conala() -> Dataset:
         response = sample["snippet"]
         if "return" in response and "def" in response:
             d["text"].append(prompt)
-            # response.replace("    ", "\t")
             d["code"].append(response)
 
     data2 = load_dataset("neulab/conala", "mined", split="train")
+    validation_data2 = load_dataset("neulab/conala", "mined", split="validation")
+    data2 = concatenate_datasets([data2, validation_data2])
+    
     for sample in data2:
         prompt = sample["intent"]
         response = sample["snippet"]
         if "return" in response and "def" in response:
             d["text"].append(prompt)
-            # response.replace("    ", "\t")
             d["code"].append(response)
 
     data = Dataset.from_dict(d)
     
     return data
 
-data = ingest_data("conala")
+data = ingest_data("conala,codealpaca")
 data
