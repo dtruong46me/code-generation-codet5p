@@ -27,16 +27,13 @@ def ingest_data(datapath:str, split="train") -> Dataset:
                 all_datasets = concatenate_datasets([all_datasets, load_codealpaca(split=split)])
         
         all_datasets.shuffle(seed=42)
-        print(all_datasets)
 
         return all_datasets
 
 # Load MBPP dataset
 def load_mbpp(split="train") -> Dataset:
-    if split=="valid":
-        return load_dataset("google-research-datasets/mbpp", split="validation", trust_remote_code=True)
-    
     data = load_dataset("google-research-datasets/mbpp", trust_remote_code=True, split=split)
+    print(data)
     return data # -> Dataset({"text":... "code":...})
 
 # Load CodeAlpaca dataset
@@ -47,6 +44,7 @@ def load_codealpaca(split="train") -> Dataset:
     data = data.rename_column("response", "code")
 
     data = data.filter(filter_func)
+    print(data)
     return data
 
 # Load Conala dataset
@@ -60,6 +58,7 @@ def load_conala(split="train") -> Dataset:
     data = data.rename_column("snippet", "code")
 
     data = data.filter(filter_func)
+    print(data)
     return data
 
 def filter_func(sample):
