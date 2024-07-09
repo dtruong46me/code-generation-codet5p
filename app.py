@@ -51,10 +51,7 @@ class StreamlitTextStreamer(TextStreamer):
 
 def generate_code(model, input_text, generation_config, tokenizer, st_container, st_info_container) -> str:
     try:
-        prefix = "Generate Python code for the following instruction: \n###\n"
-        suffix = "\n### Code:"
-
-        input_ids = tokenizer.encode(prefix + input_text + suffix, return_tensors="pt")
+        input_ids = tokenizer.encode(input_text, return_tensors="pt")
 
         # Initialize the Streamlit container and streamer
         streamer = StreamlitTextStreamer(tokenizer, st_container, st_info_container, skip_special_tokens=True, decoder_start_token_id=3)
@@ -73,7 +70,7 @@ input_text = st.text_input("Enter your input")
 
 with st.sidebar:
     st.header("Model:")
-    checkpoint = st.selectbox("Model", options=["Choose model", "Salesforce/codet5p-220m-py", "Salesforce/codet5p-770m-py", "cincin2399/codet5-fine-tuned"])
+    checkpoint = st.selectbox("Model", options=["Choose model", "Salesforce/codet5p-220m-py", "Salesforce/codet5p-770m-py", "dtruong46me/codet5p-220m"])
 
     st.header("Generation Config")
     temperature = st.number_input("temperature", min_value=0.0, max_value=1.00, step=0.05, value=0.9)
