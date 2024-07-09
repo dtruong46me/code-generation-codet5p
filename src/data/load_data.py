@@ -90,6 +90,3 @@ def load_conala() -> Dataset:
     data = Dataset.from_dict(d)
     
     return data
-
-data = ingest_data("conala,codealpaca")
-data
