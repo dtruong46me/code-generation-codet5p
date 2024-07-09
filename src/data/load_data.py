@@ -49,7 +49,7 @@ def load_codealpaca(split="train") -> Dataset:
 
 # Load Conala dataset
 def load_conala(split="train") -> Dataset:
-    data1 = load_dataset("conala", split=split, trust_remote_code=True)
+    data1 = load_dataset("neulab/conala", split=split, trust_remote_code=True)
     data2 = load_dataset("neulab/conala", "mined", split=split, trust_remote_code=True)
 
     data = concatenate_datasets([data1, data2])
