@@ -24,6 +24,8 @@ def ingest_data(datapath:str, split="train") -> Dataset:
                 all_datasets = concatenate_datasets([all_datasets, load_conala(split=split)])
             if datapath=="codealpaca":
                 all_datasets = concatenate_datasets([all_datasets, load_codealpaca(split=split)])
+        
+        all_datasets.shuffle(seed=42)
 
         return all_datasets
 
