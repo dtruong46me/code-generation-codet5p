@@ -33,7 +33,9 @@ def ingest_data(datapath:str, split="train") -> Dataset:
 # Load MBPP dataset
 def load_mbpp(split="train") -> Dataset:
     data = load_dataset("google-research-datasets/mbpp", trust_remote_code=True, split=split)
-    print(data)
+    data = data.remove_columns(['task_id', 'test_list', 'test_setup_code', 'challenge_test_list'])
+    print("google-research-datasets/mbpp\n", data)
+    print("Sample:\n", data[0])
     return data # -> Dataset({"text":... "code":...})
 
 # Load CodeAlpaca dataset
@@ -42,9 +44,11 @@ def load_codealpaca(split="train") -> Dataset:
 
     data = data.rename_column("prompt", "text")
     data = data.rename_column("response", "code")
+    data = data.remove_columns(['question_id', 'rewritten_intent', 'parent_answer_post_id', 'prob', 'id'])
 
     data = data.filter(filter_func)
-    print(data)
+    print("Abzu/CodeAlpacaPython\n", data)
+    print("Sample:\n", data[0])
     return data
 
 # Load Conala dataset
@@ -56,9 +60,11 @@ def load_conala(split="train") -> Dataset:
 
     data = data.rename_column("intent", "text")
     data = data.rename_column("snippet", "code")
+    data = data.remove_columns(['task_id', 'test_list', 'test_setup_code', 'challenge_test_list', 'question_id', 'rewritten_intent', 'parent_answer_post_id', 'prob', 'id'])
 
     data = data.filter(filter_func)
-    print(data)
+    print("neulab/conala\n", data)
+    print("Sample:\n", data[0])
     return data
 
 def filter_func(sample):
