@@ -1,92 +1,60 @@
 from datasets import load_dataset, Dataset, concatenate_datasets
 
-def ingest_data(datapath:str="mbpp") -> Dataset:
+
+# Ingest Dataset
+def ingest_data(datapath:str, split="train") -> Dataset:
     if "," not in datapath:
-        if datapath == "mbpp":
-            return load_mbpp()
-        elif datapath == "codealpaca":
-            return load_codealpaca()
-        elif datapath == "conala":
-            return load_conala()
-        
-    if "," in datapath:
-        datapaths = datapath.split(",")
-        all_data = Dataset.from_dict({
+        if datapath=="mbpp":
+            return load_mbpp(split=split)
+        if datapath=="conala":
+            return load_conala(split=split)
+        if datapath=="codealpaca":
+            return load_codealpaca(split=split)
+    
+    if "," not in datapath:
+        all_datapaths = datapath.split(",")
+        all_datasets = Dataset.from_dict({
             "text": [],
             "code": []
         })
-        for datapath in datapaths:
-            if datapath == "mbpp":
-                all_data = concatenate_datasets([all_data, load_mbpp()])
-            elif datapath == "codealpaca":
-                all_data = concatenate_datasets([all_data, load_codealpaca()])
-            elif datapath == "conala":
-                all_data = concatenate_datasets([all_data, load_conala()])
-        return all_data
+        for datapath in all_datapaths:
+            if datapath=="mbpp":
+                all_datasets = concatenate_datasets([all_datasets, load_mbpp(split=split)])
+            if datapath=="conala":
+                all_datasets = concatenate_datasets([all_datasets, load_conala(split=split)])
+            if datapath=="codealpaca":
+                all_datasets = concatenate_datasets([all_datasets, load_codealpaca(split=split)])
 
-def load_mbpp() -> Dataset:
-    data = load_dataset("mbpp", trust_remote_code=True)
-    data = concatenate_datasets([
-        data["train"],
-        data["test"],
-        data["validation"],
-        data["prompt"]
-    ])
+        return all_datasets
 
-    data = Dataset.from_dict({
-        "text": data["text"],
-        "code": data["code"]
-    })
+# Load MBPP dataset
+def load_mbpp(split="train") -> Dataset:
+    data = load_dataset("mbpp", trust_remote_code=True, split=split)
+    
+    return data # -> Dataset({"text":... "code":...})
+
+# Load CodeAlpaca dataset
+def load_codealpaca(split="train") -> Dataset:
+    data = load_dataset("Abzu/CodeAlpacaPython", split=split, trust_remote_code=True)
+
+    data = data.rename_column("prompt", "text")
+    data = data.rename_column("response", "code")
+
+    data = data.filter(filter_func)
     return data
 
+# Load Conala dataset
+def load_conala(split="train") -> Dataset:
+    data1 = load_dataset("conala", split=split, trust_remote_code=True)
+    data2 = load_dataset("neulab/conala", "mined", split=split, trust_remote_code=True)
 
-def load_codealpaca() -> Dataset:
-    train_data = load_dataset("Abzu/CodeAlpacaPython", split="train", trust_remote_code=True)
-    validation_data = load_dataset("Abzu/CodeAlpacaPython", split="validation", trust_remote_code=True)
-    data = concatenate_datasets([train_data, validation_data])
-    d = {
-        "text": [],
-        "code": []
-    }
-    for sample in data:
-        prompt = sample["prompt"]
-        response = sample["response"]
-        if "return" in response:
-            d["text"].append(prompt)
-            response.replace("    ", "\t")
-            d["code"].append(response)
+    data = concatenate_datasets([data1, data2])
 
-    data = Dataset.from_dict(d)
+    data = data.rename_column("intent", "text")
+    data = data.rename_column("snippet", "code")
+
+    data = data.filter(filter_func)
     return data
 
-
-def load_conala() -> Dataset:
-    train_data1 = load_dataset("neulab/conala", split="train", trust_remote_code=True)
-    validation_data1 = load_dataset("neulab/conala", split="validation", trust_remote_code=True)
-    data1 = concatenate_datasets([train_data1, validation_data1])
-    
-    d = {
-        "text": [],
-        "code": []
-    }
-    for sample in data1:
-        prompt = sample["intent"]
-        response = sample["snippet"]
-        if "return" in response and "def" in response:
-            d["text"].append(prompt)
-            d["code"].append(response)
-
-    data2 = load_dataset("neulab/conala", "mined", split="train")
-    validation_data2 = load_dataset("neulab/conala", "mined", split="validation")
-    data2 = concatenate_datasets([data2, validation_data2])
-    
-    for sample in data2:
-        prompt = sample["intent"]
-        response = sample["snippet"]
-        if "return" in response and "def" in response:
-            d["text"].append(prompt)
-            d["code"].append(response)
-
-    data = Dataset.from_dict(d)
-    
-    return data
+def filter_func(sample):
+    return "return" and "def" in sample["code"]
