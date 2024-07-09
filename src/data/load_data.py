@@ -31,8 +31,10 @@ def ingest_data(datapath:str, split="train") -> Dataset:
 
 # Load MBPP dataset
 def load_mbpp(split="train") -> Dataset:
-    data = load_dataset("mbpp", trust_remote_code=True, split=split)
+    if split=="valid":
+        return load_dataset("mbpp", split="validation", trust_remote_code=True)
     
+    data = load_dataset("mbpp", trust_remote_code=True, split=split)
     return data # -> Dataset({"text":... "code":...})
 
 # Load CodeAlpaca dataset

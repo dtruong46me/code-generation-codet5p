@@ -10,7 +10,7 @@ from model.codet5p import load_model
 from model.qlora_model import load_qlora_model
 from model.lora_model import load_lora_model
 from model.ia3_model import load_ia3_model
-from data.data_cleaning import clean_data
+from data.preprocessing import split_data_into_train_valid, tokenize_data
 from data.load_data import ingest_data
 
 
@@ -51,11 +51,13 @@ def training_pipeline(args: argparse.Namespace) -> None:
         print("[+] Freeze decoder parameters except cross attention!")
 
         # Load dataset from datapath
-        data = ingest_data(args.datapath)
+        dataset = ingest_data(args.datapath, split="train")
+        train_data, valid_data = split_data_into_train_valid(dataset, test_size=0.2)
         print("[+] Complete loading dataset!")
 
         # Clean dataset with strategy
-        data = clean_data(data, model.tokenizer)
+        train_data = tokenize_data(train_data, model.tokenizer)
+        valid_data = tokenize_data(valid_data, model.tokenizer)
         print("[+] Complete cleaning dataset!")
 
         # Load training arguments
@@ -63,10 +65,14 @@ def training_pipeline(args: argparse.Namespace) -> None:
         print("[+] Complete loading training arguments!")
 
         # Load trainer
-        trainer = load_trainer(model=model.origin_model, 
-                            training_args=training_args, 
-                            dataset=data, 
-                            tokenizer=model.tokenizer)
+        trainer = Seq2SeqTrainer(
+            model=model,
+            args=training_args,
+            train_dataset=train_data,
+            eval_dataset=valid_data,
+            tokenizer=model.tokenizer
+        )
+
         print("[+] Complete loading trainer!")
 
         # Train model

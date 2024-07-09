@@ -38,16 +38,6 @@ def load_training_arguments(args):
     )
     return training_args
 
-def load_trainer(model, training_args, dataset, tokenizer):
-    trainer = Seq2SeqTrainer(
-        model=model,
-        args=training_args,
-        train_dataset=dataset["train"],
-        eval_dataset=dataset["valid"],
-        tokenizer=tokenizer,
-    )
-    return trainer
-
 def load_tokens(token_path):
     if os.path.exists(token_path):
         with open(token_path, "r") as f:
