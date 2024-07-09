@@ -15,7 +15,11 @@ top_p = 0.0
 
 with st.sidebar:
     st.header("Choose model:")
-    checkpoint = st.selectbox("Model", options=["", "Salesforce/codet5p-220m", "Salesforce/codet5p-770m", "cincin2399/codet5-fine-tuned"])
+    checkpoint = "Dinosaur1812/codet5p-770m-lora"
+    checkpoint = st.selectbox("Model", options=["", "Salesforce/codet5p-220m",
+                                                 "Salesforce/codet5p-770m", 
+                                                 "cincin2399/codet5-fine-tuned", 
+                                                 "Dinosaur1812/codet5p-770m-lora"])
 
     model = load_model(checkpoint)
     model.origin_model = model.get_codet5p()
