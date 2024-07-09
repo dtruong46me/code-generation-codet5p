@@ -1,13 +1,9 @@
-import yaml
-import os
-from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, Trainer
-import argparse
+from transformers import Seq2SeqTrainingArguments
 
-import torch.nn.functional as F
+import argparse
 
 import torch
 import numpy as np
-
 
 # Load Training Arguments
 def load_training_arguments(args):
@@ -37,14 +33,6 @@ def load_training_arguments(args):
         run_name=args.run_name
     )
     return training_args
-
-def load_tokens(token_path):
-    if os.path.exists(token_path):
-        with open(token_path, "r") as f:
-            tokens = yaml.safe_load(f)
-            return tokens
-    else:
-        return
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Fine tuning CodeT5 Model")

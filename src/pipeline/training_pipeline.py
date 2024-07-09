@@ -12,7 +12,7 @@ from model.lora_model import load_lora_model
 from model.ia3_model import load_ia3_model
 from data.preprocessing import split_data_into_train_valid, tokenize_data
 from data.load_data import ingest_data
-
+from transformers import Seq2SeqTrainer
 
 def training_pipeline(args: argparse.Namespace) -> None:
     try:
