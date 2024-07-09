@@ -11,7 +11,7 @@ def ingest_data(datapath:str, split="train") -> Dataset:
         if datapath=="codealpaca":
             return load_codealpaca(split=split)
     
-    if "," not in datapath:
+    if "," in datapath:
         all_datapaths = datapath.split(",")
         print("[+] Loading dataset from:", all_datapaths)
         all_datasets = Dataset.from_dict({
