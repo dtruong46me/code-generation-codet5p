@@ -21,18 +21,7 @@ class FineTunedCodet5Model:
                                                          torch_dtype=torch.bfloat16,
                                                          trust_remote_code=True).to(self.device)
         return T5ForConditionalGeneration.from_pretrained(self.checkpoint).to(self.device)
-
-    def generate(self, input_text):
-        try:
-            print(f"Generating from query: ### {input_text}")
-            input_ids = self.tokenizer.encode(input_text, return_tensors="pt").to(self.device)
-            outputs = self.origin_model.generate(input_ids, self.generation_config, do_sample=True)
-            generated_text = self.tokenizer.decode([token for token in outputs[0] if token != -100], skip_special_tokens=True)
-            return generated_text
-
-        except Exception as e:
-            print(f"Error while generating: {e}")
-            raise e
+    
         
     def get_trainable_parameters(self) -> None:
         print("=========================================")

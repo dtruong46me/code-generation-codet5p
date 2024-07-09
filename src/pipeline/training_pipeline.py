@@ -68,7 +68,7 @@ def training_pipeline(args: argparse.Namespace) -> None:
 
         # Load trainer
         trainer = Seq2SeqTrainer(
-            model=model,
+            model=model.origin_model,
             args=training_args,
             train_dataset=train_data,
             eval_dataset=valid_data,
