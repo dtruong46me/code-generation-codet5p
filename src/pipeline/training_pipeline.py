@@ -52,6 +52,8 @@ def training_pipeline(args: argparse.Namespace) -> None:
 
         # Load dataset from datapath
         dataset = ingest_data(args.datapath, split="train")
+        print(dataset)
+        print(type(dataset))
         train_data, valid_data = split_data_into_train_valid(dataset, test_size=0.2)
         print("[+] Complete loading dataset!")
 
