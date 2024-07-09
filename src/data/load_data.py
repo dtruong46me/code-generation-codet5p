@@ -41,8 +41,8 @@ def load_mbpp() -> Dataset:
 
 
 def load_codealpaca() -> Dataset:
-    train_data = load_dataset("Abzu/CodeAlpacaPython", split="train")
-    validation_data = load_dataset("Abzu/CodeAlpacaPython", split="validation")
+    train_data = load_dataset("Abzu/CodeAlpacaPython", split="train", trust_remote_code=True)
+    validation_data = load_dataset("Abzu/CodeAlpacaPython", split="validation", trust_remote_code=True)
     data = concatenate_datasets([train_data, validation_data])
     d = {
         "text": [],
@@ -61,8 +61,8 @@ def load_codealpaca() -> Dataset:
 
 
 def load_conala() -> Dataset:
-    train_data1 = load_dataset("neulab/conala", split="train")
-    validation_data1 = load_dataset("neulab/conala", split="validation")
+    train_data1 = load_dataset("neulab/conala", split="train", trust_remote_code=True)
+    validation_data1 = load_dataset("neulab/conala", split="validation", trust_remote_code=True)
     data1 = concatenate_datasets([train_data1, validation_data1])
     
     d = {
