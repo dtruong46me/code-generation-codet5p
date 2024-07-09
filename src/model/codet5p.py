@@ -35,9 +35,9 @@ class FineTunedCodet5Model:
             raise e
         
     def get_trainable_parameters(self) -> None:
-        print("=================")
+        print("=========================================")
         print("Total parameters:", self.origin_model.num_parameters())
-        print("=================")
+        print("=========================================")
   
 
 # Load model    

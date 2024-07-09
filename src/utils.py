@@ -87,7 +87,7 @@ def parse_args() -> argparse.Namespace:
 def get_model_size(model):
     model_parameters = filter(lambda p: p.requires_grad, model.parameters())
     model_size = sum([np.prod(p.size()) for p in model_parameters])
-    return "{:.2f}M".format(round(model_size / 1e+6))
+    return "{:.2f} M".format(round(model_size / 1000000, 2))
 
 def freeze_decoder_except_xattn_codegen(model):
     print(f"Params before freezing: {model.num_parameters()} || Trainable parameters: {get_model_size(model)}")
@@ -107,5 +107,5 @@ def freeze_decoder_except_xattn_codegen(model):
         if hasattr(each_decoder_layer, "alpha_xattn"):
             each_decoder_layer.alpha_xattn.requires_grad = True
             
-    print(f"Params before freezing: {model.num_parameters()} || Trainable parameters: {get_model_size(model)}")
+    print(f"Params after freezing: {model.num_parameters()} || Trainable parameters: {get_model_size(model)}")
     

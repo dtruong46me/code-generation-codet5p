@@ -13,6 +13,7 @@ def ingest_data(datapath:str, split="train") -> Dataset:
     
     if "," not in datapath:
         all_datapaths = datapath.split(",")
+        print("[+] Loading dataset from:", all_datapaths)
         all_datasets = Dataset.from_dict({
             "text": [],
             "code": []
