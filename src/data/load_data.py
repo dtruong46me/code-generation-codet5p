@@ -34,6 +34,7 @@ def ingest_data(datapath:str, split="train") -> Dataset:
 def load_mbpp(split="train") -> Dataset:
     data = load_dataset("google-research-datasets/mbpp", trust_remote_code=True, split=split)
     data = data.remove_columns(['task_id', 'test_list', 'test_setup_code', 'challenge_test_list'])
+    data = data.map(lambda example: {"code": example["code"].replace("    ", "\t")})
     print(".............\ngoogle-research-datasets/mbpp\n", data)
     print("Sample:\n")
     print("[+] Text:", data[0]["text"], end="\n\n")
@@ -46,7 +47,7 @@ def load_codealpaca(split="train") -> Dataset:
 
     data = data.rename_column("prompt", "text")
     data = data.rename_column("response", "code")
-
+    data = data.map(lambda example: {"code": example["code"].replace("    ", "\t")})
     data = data.filter(filter_func)
     print(".............\nAbzu/CodeAlpacaPython\n", data)
     print("Sample:\n")
@@ -68,6 +69,7 @@ def load_conala(split="train") -> Dataset:
 
     data = data.rename_column("intent", "text")
     data = data.rename_column("snippet", "code")
+    data = data.map(lambda example: {"code": example["code"].replace("    ", "\t")})
 
     # data = data.filter(filter_func)
     print(".............\nneulab/conala\n", data)
