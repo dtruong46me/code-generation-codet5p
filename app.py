@@ -70,7 +70,7 @@ input_text = st.text_input("Enter your input")
 
 with st.sidebar:
     st.header("Model:")
-    checkpoint = st.selectbox("Model", options=["Choose model", "Salesforce/codet5p-220m-py", "Salesforce/codet5p-770m-py", "dtruong46me/codet5p-220m"])
+    checkpoint = st.selectbox("Model", options=["Choose model", "Salesforce/codet5p-220m-py", "Salesforce/codet5p-770m-py", "dtruong46me/codet5p-220m", "dtruong46me/codet5p-770m-lora", "dgktrnk/finetuned-codet5p-770m"])
 
     st.header("Generation Config")
     temperature = st.number_input("temperature", min_value=0.0, max_value=1.00, step=0.05, value=0.9)
