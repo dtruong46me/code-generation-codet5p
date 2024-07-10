@@ -18,7 +18,7 @@ class FineTunedCodet5Model:
     def get_codet5p(self):
         if self.checkpoint=="Salesforce/codet5p-2b" or self.checkpoint=="Salesforce/codet5p-6b":
             return AutoModelForSeq2SeqLM.from_pretrained(self.checkpoint,
-                                                         torch_dtype=torch.bfloat16,
+                                                         torch_dtype=torch.float16,
                                                          trust_remote_code=True).to(self.device)
         return T5ForConditionalGeneration.from_pretrained(self.checkpoint).to(self.device)
     
