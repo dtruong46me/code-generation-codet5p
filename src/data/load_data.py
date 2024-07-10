@@ -59,11 +59,11 @@ def load_codealpaca(split="train") -> Dataset:
 def load_conala(split="train") -> Dataset:
     data1 = load_dataset("neulab/conala", split=split, trust_remote_code=True)
     data1 = data1.remove_columns(['question_id', 'rewritten_intent'])
-    data1 = data1.select([x for x in range(0, 500, 5)])
+    data1 = data1.select([x for x in range(0, 500, 2)])
     
     data2 = load_dataset("neulab/conala", "mined", split=split, trust_remote_code=True)
     data2 = data2.remove_columns(['question_id', 'parent_answer_post_id', 'prob', 'id'])
-    data2 = data2.select([x for x in range(0, 500, 5)])
+    data2 = data2.select([x for x in range(0, 500, 2)])
     
     data = concatenate_datasets([data1, data2])
 
@@ -71,7 +71,6 @@ def load_conala(split="train") -> Dataset:
     data = data.rename_column("snippet", "code")
     data = data.map(lambda example: {"code": example["code"].replace("    ", "\t")})
 
-    # data = data.filter(filter_func)
     print(".............\nneulab/conala\n", data)
     print("Sample:\n")
     print("[+] Text:", data[0]["text"], end="\n\n")
