@@ -13,15 +13,12 @@ def tokenize_data(data: Dataset, tokenizer) -> Dataset:
     max_input_length = 48
     max_target_length = 128
     
-    def concate_task_design(text: str):
-        return f"### Instruction: Create a Python script for this problem: {text} ### Response:"
-    
     def preprocess_function(examples):
-        examples["text"] = [concate_task_design(text) for text in examples["text"]]
+        examples["text"] = [f"### Instruction: Create a Python script for this problem: {text} ### Response:" for text in examples["text"]]
         return examples
 
     data = data.map(preprocess_function)
-    
+
     tokenized_inputs = tokenizer(
         data["text"],
         padding="max_length",
