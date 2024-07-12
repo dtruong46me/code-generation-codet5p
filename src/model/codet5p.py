@@ -18,26 +18,15 @@ class FineTunedCodet5Model:
     def get_codet5p(self):
         if self.checkpoint=="Salesforce/codet5p-2b" or self.checkpoint=="Salesforce/codet5p-6b":
             return AutoModelForSeq2SeqLM.from_pretrained(self.checkpoint,
-                                                         torch_dtype=torch.bfloat16,
+                                                         torch_dtype=torch.float16,
                                                          trust_remote_code=True).to(self.device)
         return T5ForConditionalGeneration.from_pretrained(self.checkpoint).to(self.device)
-
-    def generate(self, input_text):
-        try:
-            print(f"Generating from query: ### {input_text}")
-            input_ids = self.tokenizer.encode(input_text, return_tensors="pt").to(self.device)
-            outputs = self.origin_model.generate(input_ids, self.generation_config, do_sample=True)
-            generated_text = self.tokenizer.decode([token for token in outputs[0] if token != -100], skip_special_tokens=True)
-            return generated_text
-
-        except Exception as e:
-            print(f"Error while generating: {e}")
-            raise e
+    
         
     def get_trainable_parameters(self) -> None:
-        print("=================")
+        print("=========================================")
         print("Total parameters:", self.origin_model.num_parameters())
-        print("=================")
+        print("=========================================")
   
 
 # Load model    

@@ -1,13 +1,9 @@
-import yaml
-import os
-from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, Trainer
-import argparse
+from transformers import Seq2SeqTrainingArguments
 
-import torch.nn.functional as F
+import argparse
 
 import torch
 import numpy as np
-
 
 # Load Training Arguments
 def load_training_arguments(args):
@@ -37,69 +33,6 @@ def load_training_arguments(args):
         run_name=args.run_name
     )
     return training_args
-
-class CustomTrainer(Trainer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def compute_loss(self, model, inputs, return_outputs=False):
-        # Forward pass
-        outputs = model(**inputs)
-        logits = outputs.logits
-
-        # Text2Code and Code2Text generation losses
-        labels = inputs.get("labels")
-        lt2c = self.label_smoother(logits, labels)
-        lc2t = self.label_smoother(logits.transpose(1,2), labels.transpose(1,2))
-
-        # Text-Code contrastive loss
-        cls_embeddings = outputs.encoder_last_hidden_state[:,0,:]
-        text_embeddings, code_embeddings = cls_embeddings.chunk(2, dim=0)
-        text_embeddings = F.normalize(text_embeddings, p=2, dim=-1)
-        code_embeddings = F.normalize(code_embeddings, p=2, dim=-1)
-
-        batch_size = text_embeddings.size(0)
-        temperature = self.model.temperature
-
-        # Text-to-code similarities
-        st2c = torch.matmul(text_embeddings, code_embeddings.transpose(0, 1))
-        pt2c = F.softmax(st2c / temperature, dim=1)
-        yt2c = torch.eye(batch_size).to(st2c.device)
-        lt2c_contrastive = F.cross_entropy(st2c / temperature, yt2c.argmax(dim=1))
-
-        # Code-to-text similarities
-        sc2t = torch.matmul(code_embeddings, text_embeddings.transpose(0, 1))
-        pc2t = F.softmax(sc2t / temperature, dim=1)
-        yc2t = torch.eye(batch_size).to(sc2t.device)
-        lc2t_contrastive = F.cross_entropy(sc2t / temperature, yc2t.argmax(dim=1))
-
-        # Total loss
-        loss = lt2c + lc2t + 0.5 * (lt2c_contrastive + lc2t_contrastive)
-
-        if return_outputs:
-            return loss, outputs
-        else:
-            return loss
-
-
-def load_trainer(model, training_args, dataset, tokenizer):
-    trainer = Seq2SeqTrainer(
-        model=model,
-        args=training_args,
-        train_dataset=dataset["train"],
-        eval_dataset=dataset["valid"],
-        tokenizer=tokenizer,
-        # callbacks=callbacks
-    )
-    return trainer
-
-def load_tokens(token_path):
-    if os.path.exists(token_path):
-        with open(token_path, "r") as f:
-            tokens = yaml.safe_load(f)
-            return tokens
-    else:
-        return
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Fine tuning CodeT5 Model")
@@ -131,10 +64,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--report_to", type=str, default="wandb")
     parser.add_argument("--run_name", type=str, default="codet5p-220m")
 
-    parser.add_argument("--lora", action="store_true")
-    parser.add_argument("--quantization", action="store_true")
-    parser.add_argument("--ia3", action="store_true")
-
+    parser.add_argument("--fine_tuning", type=str, default="sft") # sft, lora, qlora, ia3, prefix_tuning
 
     parser.add_argument("--lora_rank", type=int, default=16)
     parser.add_argument("--lora_alpha", type=int, default=32)
@@ -157,7 +87,7 @@ def parse_args() -> argparse.Namespace:
 def get_model_size(model):
     model_parameters = filter(lambda p: p.requires_grad, model.parameters())
     model_size = sum([np.prod(p.size()) for p in model_parameters])
-    return "{}M".format(round(model_size / 1e+6))
+    return "{:.2f} M".format(round(model_size / 1000000, 2))
 
 def freeze_decoder_except_xattn_codegen(model):
     print(f"Params before freezing: {model.num_parameters()} || Trainable parameters: {get_model_size(model)}")
@@ -177,5 +107,5 @@ def freeze_decoder_except_xattn_codegen(model):
         if hasattr(each_decoder_layer, "alpha_xattn"):
             each_decoder_layer.alpha_xattn.requires_grad = True
             
-    print(f"Params before freezing: {model.num_parameters()} || Trainable parameters: {get_model_size(model)}")
+    print(f"Params after freezing: {model.num_parameters()} || Trainable parameters: {get_model_size(model)}")
     
